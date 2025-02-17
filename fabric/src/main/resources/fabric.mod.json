@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "nmc",
+  "version": "${version}",
+  "name": "No Man Craft",
+  "description": "A very bad config library !",
+  "authors": [
+    "TATHAN"
+  ],
+  "contact": {
+    "homepage": ""
+  },
+  "license": "MIT",
+  "icon": "assets/nmc/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "fr.tathan.nmc.fabric.NoManCraftFabric"
+    ],
+    "client": [
+      "fr.tathan.nmc.fabric.client.NoManCraftFabricClient"
+    ]
+  },
+  "mixins": [
+    "nmc.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "~1.21",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

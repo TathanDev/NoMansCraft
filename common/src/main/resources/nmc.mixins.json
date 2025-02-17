@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "fr.tathan.nmc.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "client": [
+    "SkyRegistryMixin"
+  ],
+  "mixins": [
+
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "nmc"
+version = "${version}"
+displayName = "No Man Craft"
+authors = "TATHAN"
+description = '''
+A very bad config library !
+'''
+#logoFile = ""
+
+[[dependencies.nmc]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.nmc]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21,)"
+ordering = "NONE"
+side = "BOTH"
+
+
+[[mixins]]
+config = "nmc.mixins.json"
