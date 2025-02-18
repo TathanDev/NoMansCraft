@@ -58,7 +58,11 @@ subprojects {
             }
         }
         maven {
-            name "odysseyusMavenReleases"
+            name "Stellaris Snapshots"
+            url "https://maven.odysseyus.fr/snapshots"
+        }
+        maven {
+            name "Stellaris Snapshots"
             url "https://maven.odysseyus.fr/releases"
         }
     }
