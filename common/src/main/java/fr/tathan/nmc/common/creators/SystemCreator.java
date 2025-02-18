@@ -1,50 +1,63 @@
 package fr.tathan.nmc.common.creators;
 
+import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.st0x0ef.stellaris.client.screens.info.CelestialBody;
+import fr.tathan.nmc.common.data.Codecs;
 import fr.tathan.nmc.common.events.Events;
 import fr.tathan.nmc.common.utils.SystemBox;
 import fr.tathan.nmc.common.utils.Utils;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.LevelSettings;
-import net.minecraft.world.level.levelgen.WorldDimensions;
-import net.minecraft.world.level.levelgen.WorldGenSettings;
-import net.minecraft.world.level.levelgen.WorldOptions;
-import net.minecraft.world.level.storage.LevelData;
-import net.minecraft.world.level.storage.WorldData;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class SystemCreator {
 
-    public static final Codec<SystemCreator> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
-            Codec.STRING.fieldOf("name").forGetter(s -> s.name),
-            Codec.STRING.fieldOf("system").forGetter(s -> s.system),
-            CelestialBody.CODEC.fieldOf("celestialBody").forGetter(s -> s.celestialBody),
-            PlanetCreator.CODEC.listOf().fieldOf("planets").forGetter(s -> s.planets),
-            SystemBox.CODEC.fieldOf("systemBox").forGetter(s -> s.systemBox)
+    private static final Supplier<Codec<SystemCreator>> CODEC_SUPPLIER = Suppliers.memoize(() ->
+            RecordCodecBuilder.create((instance) -> instance.group(
+                    Codec.STRING.fieldOf("name").forGetter(s -> s.name),
+                    Codec.STRING.fieldOf("system").forGetter(s -> s.system),
+                    Codecs.CELESTIAL_BODY.fieldOf("celestialBody").forGetter(s -> s.celestialBody),
+                    Codec.STRING.listOf().fieldOf("planets").forGetter(s -> {
+                        List<String> planetNames = new ArrayList<>();
+                        for (PlanetCreator planet : s.planets) {
+                            planetNames.add(planet.name);
+                        }
+                        return planetNames;
+                    }),
+                    SystemBox.CODEC.fieldOf("systemBox").forGetter(s -> s.systemBox)
+            ).apply(instance, (name, system, celestialBody, planetNames, systemBox) -> {
+                // Need to find the PlanetCreator objects based on the planetNames during deserialization
+                // This requires access to the list of planets (e.g., from the SystemsData)
+                // For now, we'll pass an empty list and fix it later (see deserialization notes below)
+                return new SystemCreator(name, system, celestialBody, new ArrayList<>(), systemBox, planetNames);
+            }))
+    );
 
-    ).apply(instance, instance.stable(SystemCreator::new)));
-
+    public static Codec<SystemCreator> codec() {
+        return CODEC_SUPPLIER.get();
+    }
 
     public ArrayList<PlanetCreator> planets = new ArrayList<>();
     public final String name;
     public final String system;
     public final CelestialBody celestialBody;
     public SystemBox systemBox;
+    private final List<String> planetNames;
 
-    public SystemCreator(String name, String system, CelestialBody celestialBody, List<PlanetCreator> planets, SystemBox systemBox) {
+    public SystemCreator(String name, String system, CelestialBody celestialBody, List<PlanetCreator> planets, SystemBox systemBox, List<String> planetNames) {
         this.name = name;
         this.system = system;
         this.celestialBody = celestialBody;
         this.planets = (ArrayList<PlanetCreator>) planets;
         this.systemBox = systemBox;
+        this.planetNames = planetNames;
+
     }
 
     public SystemCreator() {
@@ -52,6 +65,8 @@ public class SystemCreator {
         this.system = Utils.generateResourcelocation(name).getPath();
         this.celestialBody = generateStar();
         generateSystemBox(generatePlanets(), false);
+        this.planetNames = new ArrayList<>();
+
     }
 
     public int generatePlanets() {
@@ -103,11 +118,4 @@ public class SystemCreator {
         return planets;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getSystem() {
-        return system;
-    }
 }

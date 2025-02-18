@@ -9,6 +9,7 @@ import com.st0x0ef.stellaris.common.events.custom.PlanetSelectionServerEvents;
 import dev.architectury.event.EventResult;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemCreator;
+import fr.tathan.nmc.common.data.SystemsData;
 import fr.tathan.nmc.common.utils.Utils;
 import fr.tathan.sky_aesthetics.client.data.SkyPropertiesData;
 
@@ -72,23 +73,9 @@ public class Events {
         PlanetSelectionClientEvents.POST_STAR_PACK_REGISTRY.register((stars) -> {
 
             if(!SYSTEMS.isEmpty()) return EventResult.pass();
+            SystemsData.loadOrGenerateDefaults();
 
-            Random random = new Random();
-            for (int i = 0; i < random.nextInt(2, 10) + 1; i++) {
-                SystemCreator creator = new SystemCreator();
 
-                PlanetSelectionScreen.STARS.add(creator.celestialBody);
-
-                creator.getPlanets().forEach((planet) -> {
-                    PlanetSelectionScreen.PLANETS.add(planet.planetInfo);
-
-                    planet.moons.forEach((moon) -> {
-                        //PlanetSelectionScreen.MOONS.add(new MoonInfo())
-                    });
-                });
-                creator.changeStarPos();
-                SYSTEMS.add(creator);
-            }
 
             return EventResult.pass();
         });

@@ -7,7 +7,7 @@
     "SkyRegistryMixin"
   ],
   "mixins": [
-
+    "LevelDataMixin"
   ],
   "injectors": {
     "defaultRequire": 1
