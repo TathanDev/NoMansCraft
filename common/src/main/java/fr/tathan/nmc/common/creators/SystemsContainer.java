@@ -54,11 +54,14 @@ public class SystemsContainer {
     public static SystemsContainer fromNetwork(final RegistryFriendlyByteBuf buffer) {
 
         List<SystemCreator> systems = new ArrayList<>();
-        for (int i = 0; i < buffer.readInt(); i++) {
+        int size = buffer.readInt();
+        for (int i = 0; i < size; i++) {
             systems.add(SystemCreator.fromNetwork(buffer));
         }
+        int size2 = buffer.readInt();
+
         List<PlanetCreator> planets = new ArrayList<>();
-        for (int i = 0; i < buffer.readInt(); i++) {
+        for (int i = 0; i < size2; i++) {
             planets.add(PlanetCreator.fromNetwork(buffer));
         }
 

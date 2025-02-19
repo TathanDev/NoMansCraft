@@ -131,8 +131,10 @@ public class SystemCreator {
         var name = buffer.readUtf();
         var system = buffer.readUtf();
         var celestialBody = NetworkHelper.FromNetwork.celestialBody(buffer);
+
+        int size = buffer.readInt();
         ArrayList<String> planets = new ArrayList<>();
-        for (int i = 0; i < buffer.readInt(); i++) {
+        for (int i = 0; i < size; i++) {
             planets.add(buffer.readUtf());
         }
         var systemBox = SystemBox.fromNetwork(buffer);
