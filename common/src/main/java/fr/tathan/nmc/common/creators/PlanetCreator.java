@@ -2,33 +2,20 @@ package fr.tathan.nmc.common.creators;
 
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.Dynamic;
-import com.mojang.serialization.OptionalDynamic;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.st0x0ef.stellaris.client.screens.info.CelestialBody;
 import com.st0x0ef.stellaris.client.screens.info.PlanetInfo;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.data.planets.PlanetTextures;
 import fr.tathan.nmc.common.data.Codecs;
-import fr.tathan.nmc.common.utils.PlanetTemperature;
-import fr.tathan.nmc.common.utils.SkyUtils;
-import fr.tathan.nmc.common.utils.SystemBox;
-import fr.tathan.nmc.common.utils.Utils;
+import fr.tathan.nmc.common.utils.*;
 import fr.tathan.sky_aesthetics.client.skies.PlanetSky;
-import net.minecraft.SharedConstants;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
+import fr.tathan.sky_aesthetics.client.skies.record.SkyProperties;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.levelgen.WorldDimensions;
-import net.minecraft.world.level.levelgen.WorldGenSettings;
-import net.minecraft.world.level.levelgen.WorldOptions;
-import net.minecraft.world.level.storage.DataVersion;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Supplier;
 
 public class PlanetCreator {
@@ -41,8 +28,8 @@ public class PlanetCreator {
                     Codec.STRING.fieldOf("name").forGetter(s -> s.name),
                     Planet.CODEC.fieldOf("planet").forGetter(s -> s.planet),
                     PlanetInfo.CODEC.fieldOf("planetInfo").forGetter(s -> s.planetInfo),
-                    PlanetCreator.codec().listOf().fieldOf("moons").forGetter(s -> s.moons), // Recursive call
-                    Codecs.SKY.fieldOf("sky").forGetter(s -> s.sky)
+                    MoonCreator.codec().listOf().fieldOf("moons").forGetter(s -> s.moons), // Recursive call
+                    SkyProperties.CODEC.fieldOf("sky").forGetter(s -> s.sky)
             ).apply(instance, (canHaveMoon, systemName, distanceFromStar, name, planet, planetInfo, moons, sky) -> {
                 // Need to find the SystemCreator based on the systemName during deserialization
                 // This requires access to the list of systems (e.g., Events.SYSTEMS)
@@ -56,30 +43,60 @@ public class PlanetCreator {
     }
 
 
+
     public final boolean canHaveMoon;
-    public ArrayList<PlanetCreator> moons = new ArrayList<>();
+    public List<MoonCreator> moons = new ArrayList<>();
     public final Planet planet;
     public SystemCreator system;
     public final String name;
     public final PlanetTemperature temperature = PlanetTemperature.randomTemperature();
     public final PlanetInfo planetInfo;
     public final int distanceFromStar;
-    public final PlanetSky sky;
-
+    public final SkyProperties sky;
     private final String systemName;
 
 
-    public PlanetCreator(boolean canHaveMoon, SystemCreator system, int distanceFromStar, String name, Planet planet, PlanetInfo planetInfo, List<PlanetCreator> moons, PlanetSky sky, String systemName) {
+    public PlanetCreator(boolean canHaveMoon, SystemCreator system, int distanceFromStar, String name, Planet planet, PlanetInfo planetInfo, List<MoonCreator> moons, SkyProperties sky, String systemName) {
         this.canHaveMoon = canHaveMoon;
         this.system = system;
         this.distanceFromStar = distanceFromStar;
         this.name = name;
         this.planet = planet;
         this.planetInfo = planetInfo;
-        this.moons = (ArrayList<PlanetCreator>) moons;
+        this.moons = moons;
         this.sky = sky;
         this.systemName = systemName;
 
+    }
+
+    public static void toNetwork(PlanetCreator system, final RegistryFriendlyByteBuf buffer) {
+        buffer.writeBoolean(system.canHaveMoon);
+        //Null because we pass a null instance of SystemCreator
+        buffer.writeInt(system.distanceFromStar);
+        buffer.writeUtf(system.name);
+        NetworkHelper.ToNetwork.planet(buffer, system.planet);
+        NetworkHelper.ToNetwork.planetInfo(buffer, system.planetInfo);
+        buffer.writeInt(system.moons.size());
+        system.moons.forEach((moon) -> {
+            MoonCreator.toNetwork(moon, buffer);
+        });
+        NetworkHelper.ToNetwork.skyProperties(buffer, system.sky);
+        buffer.writeUtf(system.systemName);
+    }
+
+    public static PlanetCreator fromNetwork(final RegistryFriendlyByteBuf buffer) {
+        var canHaveMoon = buffer.readBoolean();
+        var distanceFromStar = buffer.readInt();
+        var name = buffer.readUtf();
+        var planet = NetworkHelper.FromNetwork.planet(buffer);
+        var planetInfo = NetworkHelper.FromNetwork.planetInfo(buffer);
+        var moons = new ArrayList<MoonCreator>();
+        for (int i = 0; i < buffer.readInt(); i++) {
+            moons.add(MoonCreator.fromNetwork(buffer));
+        }
+        var sky = NetworkHelper.FromNetwork.skyProperties(buffer);
+        var systemName = buffer.readUtf();
+        return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName);
     }
 
     public PlanetCreator(SystemCreator system) {
@@ -105,16 +122,10 @@ public class PlanetCreator {
 
     }
 
-
-
-
-    public ArrayList<PlanetCreator> createMoons() {
-        ArrayList<PlanetCreator> moons = new ArrayList<>();
+    public ArrayList<MoonCreator> createMoons() {
+        ArrayList<MoonCreator> moons = new ArrayList<>();
         if(canHaveMoon) {
-            Random random = new Random();
-            for(int i = 0; i < random.nextInt(3); i++) {
-                moons.add(new PlanetCreator(false, this.system, 10 + i * 10));
-            }
+            moons.add(new MoonCreator(this));
         }
         return moons;
     }
@@ -131,20 +142,47 @@ public class PlanetCreator {
         return new PlanetInfo(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/star.png"),
                 this.name,
                 this.distanceFromStar,
-                (int) (Math.random() * 10000) - distanceFromStar * 100L,
+                (int) Math.clamp(((Math.random() * 10000) - distanceFromStar * 100L) + this.distanceFromStar * 2, 1000, 20000),
                 10,
                 10,
                 this.system.celestialBody,
                 Utils.generateResourcelocation(this.name),
                 this.name,
-                this.name
+                Utils.generateResourcelocation(this.name).getPath()
         );
     }
     public void setSystem(SystemCreator system) {
         this.system = system;
     }
 
+    public String getSystemName() {
+        return systemName;
+    }
 
+    public boolean isCanHaveMoon() {
+        return canHaveMoon;
+    }
+
+    public int getDistanceFromStar() {
+        return distanceFromStar;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Planet getPlanet() {
+        return planet;
+    }
+
+    public PlanetInfo getPlanetInfo() {
+        return planetInfo;
+    }
+
+
+    public PlanetSky getSky() {
+        return new PlanetSky(sky);
+    }
 
 
 }

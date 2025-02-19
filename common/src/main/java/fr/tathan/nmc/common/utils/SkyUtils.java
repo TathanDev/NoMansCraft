@@ -20,7 +20,7 @@ public class SkyUtils {
     public static ResourceLocation BASIC_SUN = ResourceLocation.withDefaultNamespace("textures/environment/sun.png");
     public static ResourceLocation BASIC_MOON = ResourceLocation.withDefaultNamespace("textures/environment/moon_phases.png");
 
-    public static PlanetSky createSky(PlanetCreator creator) {
+    public static SkyProperties createSky(PlanetCreator creator) {
         SkyProperties properties = new SkyProperties(
                 ResourceKey.create(Registries.DIMENSION, creator.planet.dimension()),
                 Optional.of( creator.planet.dimension()),
@@ -37,7 +37,7 @@ public class SkyUtils {
                 Optional.empty(),
                 Optional.empty()
         );
-        return new PlanetSky(properties);
+        return properties;
     }
 
     public static CloudSettings getCloudSettings(PlanetCreator creator) {

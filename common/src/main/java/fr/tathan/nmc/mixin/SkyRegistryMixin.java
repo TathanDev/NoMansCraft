@@ -6,6 +6,7 @@ import fr.tathan.nmc.common.events.Events;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemCreator;
 import fr.tathan.sky_aesthetics.client.data.SkyPropertiesData;
+import fr.tathan.sky_aesthetics.client.skies.PlanetSky;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -21,12 +22,12 @@ public class SkyRegistryMixin {
 
     @Inject(method = "apply*", at = @At("TAIL"))
     protected void addCustomSky(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
-        Stellaris.LOG.info("Adding custom sky properties {}", Events.SYSTEMS.size());
-        for (SystemCreator system : Events.SYSTEMS) {
+        Stellaris.LOG.info("Adding custom sky properties {}", Events.SYSTEMS.systems.size());
+        for (SystemCreator system : Events.SYSTEMS.systems) {
             for(PlanetCreator planetCreator : system.getPlanets()) {
-                SkyPropertiesData.SKY_PROPERTIES.put(planetCreator.planet.dimension(), planetCreator.sky);
+                SkyPropertiesData.SKY_PROPERTIES.put(planetCreator.planet.dimension(), new PlanetSky(planetCreator.sky));
                 planetCreator.moons.forEach((moon) -> {
-                    SkyPropertiesData.SKY_PROPERTIES.put(moon.planet.dimension(), moon.sky);
+                    SkyPropertiesData.SKY_PROPERTIES.put(moon.planet.dimension(), new PlanetSky(moon.sky));
                 });
 
             }

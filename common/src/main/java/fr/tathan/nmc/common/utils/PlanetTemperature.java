@@ -18,6 +18,19 @@ public enum PlanetTemperature {
         return temperature;
     }
 
+    public static PlanetTemperature fromInt(int temperature) {
+        if(temperature < -50) {
+            return VERY_COLD;
+        } else if(temperature < 0) {
+            return COLD;
+        } else if(temperature < 20) {
+            return TEMPERATE;
+        } else if(temperature < 75) {
+            return HOT;
+        } else {
+            return VERY_HOT;
+        }
+    }
 
     public static PlanetTemperature randomTemperature() {
         var random = Math.random();

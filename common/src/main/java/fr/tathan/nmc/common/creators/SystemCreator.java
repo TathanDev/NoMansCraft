@@ -6,8 +6,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.st0x0ef.stellaris.client.screens.info.CelestialBody;
 import fr.tathan.nmc.common.data.Codecs;
 import fr.tathan.nmc.common.events.Events;
+import fr.tathan.nmc.common.utils.NetworkHelper;
 import fr.tathan.nmc.common.utils.SystemBox;
 import fr.tathan.nmc.common.utils.Utils;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -84,9 +86,9 @@ public class SystemCreator {
         return new CelestialBody(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/star.png"),
                 this.name,
                 //X of Solar System + width of Solar System + Number of Systems + random number between 0 and 1000
-                300 + 140 + (Events.SYSTEMS.size() * 100) + (float) (Math.random() * ( Math.random() * 1000 )),
+                300 + 140 + (Events.SYSTEMS.systems.size() * 100) + (float) (Math.random() * ( Math.random() * 1000 )),
                 //Y of Solar System + width of Solar System + Number of Systems + random number between 0 and 1000
-                100 + 140 + (Events.SYSTEMS.size() * 100) + (float) (Math.random() * (Math.random() * 1000) + Math.random()),
+                100 + 140 + (Events.SYSTEMS.systems.size() * 100) + (float) (Math.random() * (Math.random() * 1000) + Math.random()),
                 30,
                 30,
                 Utils.getRandomColor(),
@@ -98,24 +100,58 @@ public class SystemCreator {
 
     public void generateSystemBox(int furtherPlanet, boolean changeStarPos) {
         if(changeStarPos) {
-
-            this.celestialBody.x = 300 + 140 + (Events.SYSTEMS.size() * 100) + (float) (Math.random() * ( Math.random() * 1000 ));
-            this.celestialBody.y = 100 + 140 + (Events.SYSTEMS.size() * 100) + (float) (Math.random() * (Math.random() * 1000) + Math.random());
+            this.celestialBody.x = 300 + 140 + (Events.SYSTEMS.systems.size() * 100) + (float) (Math.random() * ( Math.random() * 1000 ));
+            this.celestialBody.y = 100 + 140 + (Events.SYSTEMS.systems.size() * 100) + (float) (Math.random() * (Math.random() * 1000) + Math.random());
         }
-
         this.systemBox = new SystemBox((int) this.celestialBody.x, (int) this.celestialBody.y, furtherPlanet);
     }
 
     public void changeStarPos() {
-        for(SystemCreator systemCreator: Events.SYSTEMS) {
+        this.changeStarPos(Events.SYSTEMS.systems);
+    }
+
+    public void changeStarPos(List<SystemCreator> systems) {
+        for(SystemCreator systemCreator: systems) {
             while (systemCreator.systemBox.overlaps(this.systemBox)) {
                 generateSystemBox(this.planets.getLast().distanceFromStar,  true);
             }
         }
     }
 
+    public static void toNetwork(SystemCreator system, final RegistryFriendlyByteBuf buffer) {
+        buffer.writeUtf(system.name);
+        buffer.writeUtf(system.system);
+        NetworkHelper.ToNetwork.celestialBody(buffer, system.celestialBody);
+        buffer.writeInt(system.planetNames.size());
+        system.planetNames.forEach(buffer::writeUtf);
+        SystemBox.toNetwork(system.systemBox, buffer);
+    }
+
+    public static SystemCreator fromNetwork(final RegistryFriendlyByteBuf buffer) {
+        var name = buffer.readUtf();
+        var system = buffer.readUtf();
+        var celestialBody = NetworkHelper.FromNetwork.celestialBody(buffer);
+        ArrayList<String> planets = new ArrayList<>();
+        for (int i = 0; i < buffer.readInt(); i++) {
+            planets.add(buffer.readUtf());
+        }
+        var systemBox = SystemBox.fromNetwork(buffer);
+
+        return new SystemCreator(
+                name,
+                system,
+                celestialBody,
+                new ArrayList<>(),
+                systemBox,
+                planets
+        );
+    }
+
     public ArrayList<PlanetCreator> getPlanets() {
         return planets;
     }
 
+    public void setPlanets(ArrayList<PlanetCreator> planets) {
+        this.planets = planets;
+    }
 }

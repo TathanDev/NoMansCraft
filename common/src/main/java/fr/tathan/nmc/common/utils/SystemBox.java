@@ -2,11 +2,8 @@ package fr.tathan.nmc.common.utils;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.st0x0ef.stellaris.client.screens.info.PlanetInfo;
-import com.st0x0ef.stellaris.common.data.planets.Planet;
-import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemCreator;
-import fr.tathan.nmc.common.data.Codecs;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 public class SystemBox {
 
@@ -30,6 +27,16 @@ public class SystemBox {
             Codec.INT.fieldOf("y").forGetter(s -> s.y),
             Codec.INT.fieldOf("size").forGetter(s -> s.size)
     ).apply(instance, SystemBox::new));
+
+    public static void toNetwork(SystemBox system, final RegistryFriendlyByteBuf buffer) {
+        buffer.writeInt(system.x);
+        buffer.writeInt(system.y);
+        buffer.writeInt(system.size);
+    }
+
+    public static SystemBox fromNetwork(final RegistryFriendlyByteBuf buffer) {
+        return new SystemBox(buffer.readInt(), buffer.readInt(), buffer.readInt());
+    }
 
 
 }

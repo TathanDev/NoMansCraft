@@ -4,7 +4,10 @@ import com.mojang.datafixers.util.Pair;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import dev.architectury.networking.NetworkManager;
 import dev.galacticraft.dynamicdimensions.api.DynamicDimensionRegistry;
+import fr.tathan.nmc.common.creators.MoonCreator;
 import fr.tathan.nmc.common.creators.PlanetCreator;
+import fr.tathan.nmc.common.creators.SystemCreator;
+import fr.tathan.nmc.common.creators.SystemsContainer;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.SurfaceRuleData;
@@ -213,8 +216,17 @@ public class Utils {
         }
     }
 
-
     public static int getRandomColor() {
         return new Random().nextInt(0xffffff + 1);
+    }
+
+    public static ArrayList<PlanetCreator> getPlanetsInSystem(String name, SystemsContainer container) {
+        ArrayList<PlanetCreator> planets = new ArrayList<>();
+        container.planets.forEach((planetCreator -> {
+            if(planetCreator.getSystemName().equals(name)) {
+                planets.add(planetCreator);
+            }
+        }));
+        return planets;
     }
 }
