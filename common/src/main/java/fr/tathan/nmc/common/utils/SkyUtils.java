@@ -1,7 +1,6 @@
 package fr.tathan.nmc.common.utils;
 
 import fr.tathan.nmc.common.creators.PlanetCreator;
-import fr.tathan.sky_aesthetics.client.skies.PlanetSky;
 import fr.tathan.sky_aesthetics.client.skies.record.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;

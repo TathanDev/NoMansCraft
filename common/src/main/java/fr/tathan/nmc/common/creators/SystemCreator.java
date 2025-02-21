@@ -88,9 +88,9 @@ public class SystemCreator {
         return new CelestialBody(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/star.png"),
                 this.name,
                 //X of Solar System + width of Solar System + Number of Systems + random number between 0 and 1000
-                300 + 140  + (float) (Math.random() * (Math.random() * Math.random() * 100 * ( Math.random() * 1000))),
+                300 + 140  + (float) (Math.random() * (Math.random() * Math.random() * 50 * ( Math.random() * 1000))),
                 //Y of Solar System + width of Solar System + Number of Systems + random number between 0 and 1000
-                100 + 140 + (float) (Math.random() * (Math.random() * Math.random() * 100 * ( Math.random() * 1000))),
+                100 + 140 + (float) (Math.random() * (Math.random() * Math.random() * 50 * ( Math.random() * 1000))),
                 30,
                 30,
                 Utils.getRandomColor(),

@@ -2,7 +2,6 @@ package fr.tathan.nmc.common.utils;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import fr.tathan.nmc.common.creators.SystemCreator;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
 public class SystemBox {
