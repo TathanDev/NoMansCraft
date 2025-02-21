@@ -4,13 +4,10 @@ import com.mojang.datafixers.util.Pair;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import dev.architectury.networking.NetworkManager;
 import dev.galacticraft.dynamicdimensions.api.DynamicDimensionRegistry;
-import fr.tathan.nmc.common.creators.MoonCreator;
 import fr.tathan.nmc.common.creators.PlanetCreator;
-import fr.tathan.nmc.common.creators.SystemCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.DimensionTypes;
 import net.minecraft.data.worldgen.SurfaceRuleData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -77,6 +74,12 @@ public class Utils {
             Biomes.BASALT_DELTAS.location(),
             ResourceLocation.fromNamespaceAndPath("stellaris", "mercury"),
             ResourceLocation.fromNamespaceAndPath("stellaris", "infernal_venus_barrens")
+    };
+
+    public static ResourceLocation[] HOT_BIOMES = {
+            Biomes.DESERT.location(),
+            Biomes.SAVANNA_PLATEAU.location(),
+            Biomes.BADLANDS.location(),
     };
 
 
@@ -168,15 +171,17 @@ public class Utils {
 
     public static ArrayList<ResourceKey<Biome>> getBiomes(PlanetCreator planetInfo) {
         return switch (planetInfo.temperature) {
-            case HOT, VERY_HOT, TEMPERATE -> getSuperHotBiomes();
-            default -> getColdBiomes();
+            case VERY_HOT -> getVeryHotBiomes();
+            case VERY_COLD -> getVeryColdBiomes();
+            case HOT -> getHotBiomes();
+            case COLD -> getColdBiomes();
+            default -> getVeryColdBiomes();
         };
     }
 
 
-    public static ArrayList<ResourceKey<Biome>> getColdBiomes() {
+    public static ArrayList<ResourceKey<Biome>> getVeryColdBiomes() {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
-
         while (biomes.size() < 7) {
             int random = new Random().nextInt(VERY_COLD_BIOMES.length);
             biomes.add(ResourceKey.create(Registries.BIOME, VERY_COLD_BIOMES[random]));
@@ -188,14 +193,37 @@ public class Utils {
         return biomes;
     }
 
-    public static ArrayList<ResourceKey<Biome>> getSuperHotBiomes() {
+    public static ArrayList<ResourceKey<Biome>> getVeryHotBiomes() {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
-        biomes.add(Biomes.NETHER_WASTES);
-        biomes.add(Biomes.BASALT_DELTAS);
-        biomes.add(ResourceKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("stellaris", "mercury")));
-        biomes.add(ResourceKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("stellaris", "infernal_venus_barrens")));
+        while (biomes.size() < 7) {
+            int random = new Random().nextInt(VERY_HOT_BIOMES.length);
+            biomes.add(ResourceKey.create(Registries.BIOME, VERY_HOT_BIOMES[random]));
+        }
+        while (biomes.size() < 10) {
+            int random = new Random().nextInt(HOT_BIOMES.length);
+            biomes.add(ResourceKey.create(Registries.BIOME, HOT_BIOMES[random]));
+        }
         return biomes;
     }
+
+    public static ArrayList<ResourceKey<Biome>> getHotBiomes() {
+        ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
+        while (biomes.size() < 10) {
+            int random = new Random().nextInt(HOT_BIOMES.length);
+            biomes.add(ResourceKey.create(Registries.BIOME, HOT_BIOMES[random]));
+        }
+        return biomes;
+    }
+
+    public static ArrayList<ResourceKey<Biome>> getColdBiomes() {
+        ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
+        while (biomes.size() < 10) {
+            int random = new Random().nextInt(COLD_BIOMES.length);
+            biomes.add(ResourceKey.create(Registries.BIOME, COLD_BIOMES[random]));
+        }
+        return biomes;
+    }
+
 
     public static NoiseGeneratorSettings generatorSettings(RegistryAccess registryAccess, PlanetCreator planetInfo) {
         return new NoiseGeneratorSettings(createNoiseSettings(), getDefaultBlock(planetInfo), getDefaultLiquid(planetInfo), NoiseRouterData.overworld(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE), Math.random() > 0.8, Math.random() > 0.85), SurfaceRuleData.overworld(), (new OverworldBiomeBuilder()).spawnTarget(), getSeaLevel(), false, true, true, false);

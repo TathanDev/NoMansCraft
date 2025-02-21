@@ -3,6 +3,7 @@ package fr.tathan.nmc.common.creators;
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.client.screens.info.CelestialBody;
 import fr.tathan.nmc.NoManCraft;
 import fr.tathan.nmc.common.data.Codecs;
@@ -12,6 +13,7 @@ import fr.tathan.nmc.common.utils.SystemBox;
 import fr.tathan.nmc.common.utils.Utils;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,9 +69,8 @@ public class SystemCreator {
         this.name = Utils.generateGalaxyName();
         this.system = Utils.generateResourcelocation(name).getPath();
         this.celestialBody = generateStar();
-        generateSystemBox(generatePlanets(), false);
+        generateSystemBox(generatePlanets(), false, null);
         this.planetNames = new ArrayList<>();
-
     }
 
     public int generatePlanets() {
@@ -87,9 +88,9 @@ public class SystemCreator {
         return new CelestialBody(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/star.png"),
                 this.name,
                 //X of Solar System + width of Solar System + Number of Systems + random number between 0 and 1000
-                300 + 140 + (Events.SYSTEMS.systems.size() * 100) + (float) (Math.random() * ( Math.random() * 1000 )),
+                300 + 140  + (float) (Math.random() * (Math.random() * Math.random() * 100 * ( Math.random() * 1000))),
                 //Y of Solar System + width of Solar System + Number of Systems + random number between 0 and 1000
-                100 + 140 + (Events.SYSTEMS.systems.size() * 100) + (float) (Math.random() * (Math.random() * 1000) + Math.random()),
+                100 + 140 + (float) (Math.random() * (Math.random() * Math.random() * 100 * ( Math.random() * 1000))),
                 30,
                 30,
                 Utils.getRandomColor(),
@@ -99,24 +100,42 @@ public class SystemCreator {
         );
     }
 
-    public void generateSystemBox(int furtherPlanet, boolean changeStarPos) {
+    public void generateSystemBox(int furtherPlanet, boolean changeStarPos, @Nullable List<SystemCreator> systems) {
+        int systemsSize;
+
+        if(systems == null) systemsSize = 0;
+        else systemsSize = systems.size();
+
         if(changeStarPos) {
-            this.celestialBody.x = 300 + 140 + (Events.SYSTEMS.systems.size() * 100) + (float) (Math.random() * ( Math.random() * 1000 ));
-            this.celestialBody.y = 100 + 140 + (Events.SYSTEMS.systems.size() * 100) + (float) (Math.random() * (Math.random() * 1000) + Math.random());
+            this.celestialBody.x = 300 + 140 + (systemsSize * 100) + (float) (Math.random() * Math.random() * 100 * ( Math.random() * 1000));
+            this.celestialBody.y = 100 + 140 + (systemsSize * 100) + (float) (Math.random() * Math.random() * 100 * ( Math.random() * 1000));
         }
         this.systemBox = new SystemBox((int) this.celestialBody.x, (int) this.celestialBody.y, furtherPlanet * 2);
     }
 
-    public void changeStarPos() {
-        this.changeStarPos(Events.SYSTEMS.systems);
-    }
-
     public void changeStarPos(List<SystemCreator> systems) {
-        for(SystemCreator systemCreator: systems) {
-            while (systemCreator.systemBox.overlaps(this.systemBox)) {
-                generateSystemBox(this.planets.getLast().distanceFromStar,  true);
+        boolean overlapping;
+        int maxAttempts = 1000; // Add a maximum number of attempts to prevent infinite loops
+        int attempt = 0;
+
+        do {
+            overlapping = false;
+            for (SystemCreator otherSystem : systems) {
+                if (otherSystem != this && otherSystem.systemBox.overlaps(this.systemBox)) {
+                    overlapping = true;
+                    break; // Exit the inner loop if an overlap is found
+                }
             }
-        }
+
+            if (overlapping) {
+                if (attempt >= maxAttempts) {
+                    System.err.println("Max attempts reached, could not find a non-overlapping position.");
+                    return; // Exit the method if max attempts are reached
+                }
+                generateSystemBox(this.planets.getLast().distanceFromStar, true, systems); // Regenerate the system box with a new position
+                attempt++;
+            }
+        } while (overlapping);
     }
 
     public static void toNetwork(SystemCreator system, final RegistryFriendlyByteBuf buffer) {

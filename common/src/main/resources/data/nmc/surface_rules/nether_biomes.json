@@ -27,7 +27,7 @@
             "then_run": {
               "type": "minecraft:block",
               "result_state": {
-                "Name": "stellaris:conglomerate"
+                "Name": "stellaris:conglomorate"
               }
             }
           }
@@ -59,7 +59,7 @@
             "then_run": {
               "type": "minecraft:block",
               "result_state": {
-                "Name": "stellaris:conglomerate"
+                "Name": "stellaris:conglomorate"
               }
             }
           }
