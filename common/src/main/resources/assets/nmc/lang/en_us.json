@@ -1,0 +1,16 @@
+{
+  "text.autoconfig.nmc.title": "No Man's Config",
+
+  "text.autoconfig.nmc.category.systems": "Systems Configuration",
+  "text.autoconfig.nmc.option.minSystems": "Minimum systems",
+  "text.autoconfig.nmc.option.maxSystems": "Maximum systems",
+
+  "text.autoconfig.nmc.category.planets": "Planets Configuration",
+  "text.autoconfig.nmc.option.minPlanets": "Minimum planets",
+  "text.autoconfig.nmc.option.maxPlanets": "Maximum planets",
+  "text.autoconfig.nmc.option.planetDistanceFromEarth": "Distance From Earth",
+  "text.autoconfig.nmc.option.oxygenChance": "Oxygen Chance",
+  "text.autoconfig.nmc.option.oxygenChance.@Tooltip[0]": "A random number between 0 and 10 will be generated.",
+  "text.autoconfig.nmc.option.oxygenChance.@Tooltip[1]": "If it's higher than this value, the planet will have oxygen."
+
+}

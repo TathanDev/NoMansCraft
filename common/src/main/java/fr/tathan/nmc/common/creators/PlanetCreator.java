@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.st0x0ef.stellaris.client.screens.info.PlanetInfo;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.data.planets.PlanetTextures;
-import fr.tathan.nmc.common.data.Codecs;
+import fr.tathan.nmc.NoManCraft;
 import fr.tathan.nmc.common.utils.*;
 import fr.tathan.sky_aesthetics.client.skies.PlanetSky;
 import fr.tathan.sky_aesthetics.client.skies.record.SkyProperties;
@@ -131,10 +131,10 @@ public class PlanetCreator {
     }
 
     public Planet setPlanetInfo() {
-        boolean oxygen = Math.random() > 0.2;
+        boolean oxygen = Math.random() > (double) NoManCraft.getConfig().oxygenChance / 10;
         float gravity = (float) Mth.clamp((Math.random() + Math.random()) * 10, 0.1, 12);
 
-        return new Planet(this.system.system, "planet.nmc." + Utils.generateResourcelocation(this.name).getPath(), this.name, Utils.generateResourcelocation(this.name), oxygen, temperature.temperature(), 900000, gravity,
+        return new Planet(this.system.system, "planet.nmc." + Utils.generateResourcelocation(this.name).getPath(), this.name, Utils.generateResourcelocation(this.name), oxygen, temperature.temperature(), NoManCraft.getConfig().planetDistanceFromEarth, gravity,
                  new PlanetTextures(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/planet.png"), ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/planet.png")));
     }
 

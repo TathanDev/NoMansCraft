@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.st0x0ef.stellaris.client.screens.info.CelestialBody;
+import fr.tathan.nmc.NoManCraft;
 import fr.tathan.nmc.common.data.Codecs;
 import fr.tathan.nmc.common.events.Events;
 import fr.tathan.nmc.common.utils.NetworkHelper;
@@ -73,7 +74,7 @@ public class SystemCreator {
 
     public int generatePlanets() {
         Random random = new Random();
-        int nbPlanets = random.nextInt(4) + 1;
+        int nbPlanets = random.nextInt(NoManCraft.getConfig().minPlanets, NoManCraft.getConfig().maxPlanets);
         AtomicInteger distance = new AtomicInteger(38);
         for (int i = 0; i < nbPlanets; i++) {
             planets.add(new PlanetCreator(this, distance.get()));
@@ -103,7 +104,7 @@ public class SystemCreator {
             this.celestialBody.x = 300 + 140 + (Events.SYSTEMS.systems.size() * 100) + (float) (Math.random() * ( Math.random() * 1000 ));
             this.celestialBody.y = 100 + 140 + (Events.SYSTEMS.systems.size() * 100) + (float) (Math.random() * (Math.random() * 1000) + Math.random());
         }
-        this.systemBox = new SystemBox((int) this.celestialBody.x, (int) this.celestialBody.y, furtherPlanet);
+        this.systemBox = new SystemBox((int) this.celestialBody.x, (int) this.celestialBody.y, furtherPlanet * 2);
     }
 
     public void changeStarPos() {

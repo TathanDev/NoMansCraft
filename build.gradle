@@ -80,6 +80,21 @@ subprojects {
 
         modImplementation("dev.galacticraft:dynamicdimensions-$modLoader:0.8.0+254")
         modImplementation "fr.tathan.sky-aesthetics:sky-aesthetics-$modLoader-1.21:1.4.3"
+
+        if(modLoader != "neoforge") {
+            modApi "com.terraformersmc:modmenu:11.0.3"
+        }
+        if(isCommon) {
+            modApi("me.shedaniel.cloth:cloth-config:15.0.140") {
+                exclude(group: "net.fabricmc.fabric-api")
+            }
+        } else {
+            modApi("me.shedaniel.cloth:cloth-config-$modLoader:15.0.140") {
+                exclude(group: "net.fabricmc.fabric-api")
+            }
+        }
+
+
     }
 
     java {

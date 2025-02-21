@@ -10,6 +10,7 @@ import fr.tathan.nmc.common.creators.SystemCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.DimensionTypes;
 import net.minecraft.data.worldgen.SurfaceRuleData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +20,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
@@ -99,8 +101,10 @@ public class Utils {
 
         context.registryAccess().registry(Registries.NOISE_SETTINGS).ifPresent((registry) -> {
 
-            NoiseGeneratorSettings generatorSettings = generatorSettings(context.registryAccess());
+            NoiseGeneratorSettings generatorSettings = generatorSettings(context.registryAccess(), planetInfo);
             DimensionType type = new DimensionType(OptionalLong.empty(), true, false, planet.temperature() >= 50, true, 1.0D, true, false, -64, 384, 384, BlockTags.INFINIBURN_OVERWORLD, BuiltinDimensionTypes.OVERWORLD_EFFECTS, (float) Mth.clamp(Math.random(), 0f, 0.2f), new DimensionType.MonsterSettings(false, true, UniformInt.of(0, 7), 0));
+
+
             NoiseBasedChunkGenerator generator = new NoiseBasedChunkGenerator(MultiNoiseBiomeSource.createFromList(createParameters(context.registryAccess(), planetInfo)), registry.wrapAsHolder(generatorSettings));
 
             ServerLevel level = dimRegistry.createDynamicDimension(planet.dimension(), generator, type);
@@ -163,12 +167,10 @@ public class Utils {
     }
 
     public static ArrayList<ResourceKey<Biome>> getBiomes(PlanetCreator planetInfo) {
-        switch (planetInfo.temperature) {
-            case HOT, VERY_HOT, TEMPERATE:
-                return getSuperHotBiomes();
-            default:
-                return getColdBiomes();
-        }
+        return switch (planetInfo.temperature) {
+            case HOT, VERY_HOT, TEMPERATE -> getSuperHotBiomes();
+            default -> getColdBiomes();
+        };
     }
 
 
@@ -195,8 +197,22 @@ public class Utils {
         return biomes;
     }
 
-    public static NoiseGeneratorSettings generatorSettings(RegistryAccess registryAccess) {
-        return new NoiseGeneratorSettings(createNoiseSettings(), Blocks.STONE.defaultBlockState(), Blocks.WATER.defaultBlockState(), NoiseRouterData.overworld(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE), Math.random() > 0.8, Math.random() > 0.85), SurfaceRuleData.overworld(), (new OverworldBiomeBuilder()).spawnTarget(), getSeaLevel(), false, true, true, false);
+    public static NoiseGeneratorSettings generatorSettings(RegistryAccess registryAccess, PlanetCreator planetInfo) {
+        return new NoiseGeneratorSettings(createNoiseSettings(), getDefaultBlock(planetInfo), getDefaultLiquid(planetInfo), NoiseRouterData.overworld(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE), Math.random() > 0.8, Math.random() > 0.85), SurfaceRuleData.overworld(), (new OverworldBiomeBuilder()).spawnTarget(), getSeaLevel(), false, true, true, false);
+    }
+
+    public static BlockState getDefaultBlock(PlanetCreator creator) {
+        if( creator.temperature == PlanetTemperature.VERY_HOT) {
+            return Blocks.MAGMA_BLOCK.defaultBlockState();
+        }
+        return creator.temperature == PlanetTemperature.VERY_COLD ? Blocks.PACKED_ICE.defaultBlockState() : Blocks.STONE.defaultBlockState();
+    }
+
+    public static BlockState getDefaultLiquid(PlanetCreator creator) {
+        if(creator.temperature == PlanetTemperature.VERY_HOT) {
+            return Blocks.LAVA.defaultBlockState();
+        }
+        return Blocks.WATER.defaultBlockState();
     }
 
     public static NoiseSettings createNoiseSettings() {

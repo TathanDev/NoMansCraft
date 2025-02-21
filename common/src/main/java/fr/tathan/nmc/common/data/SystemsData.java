@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.client.screens.PlanetSelectionScreen;
+import com.st0x0ef.stellaris.common.data.planets.Planet;
+import com.st0x0ef.stellaris.common.data.planets.StellarisData;
 import com.st0x0ef.stellaris.common.network.packets.SyncWidgetsTanksPacket;
 import dev.architectury.networking.NetworkManager;
 import fr.tathan.nmc.NoManCraft;
@@ -40,15 +42,14 @@ public class SystemsData {
             for(SystemCreator systemCreator : creator.systems ) {
                 systemCreator.setPlanets(Utils.getPlanetsInSystem(systemCreator.name, creator));
             }
-            Events.SYSTEMS = creator;
-            Stellaris.LOG.error("Loaded systems from file {}", creator.systems.size());
 
+            StellarisData.addPlanets(getPlanetsFromContainer(creator));
+
+            Events.SYSTEMS = creator;
         } catch (Exception e) {
 
-            // This is expected first run, so don't throw then
             if (!(e instanceof NoSuchFileException))
                 e.printStackTrace();
-
 
             try {
                 File folder = systemsFile.toFile().getParentFile();
@@ -67,9 +68,8 @@ public class SystemsData {
                     systemCreator.setPlanets(Utils.getPlanetsInSystem(systemCreator.name, defaults));
                 }
 
-                for(SystemCreator systemCreator : defaults.systems ) {
-                    systemCreator.setPlanets(Utils.getPlanetsInSystem(systemCreator.name, defaults));
-                }
+                StellarisData.addPlanets(getPlanetsFromContainer(defaults));
+
                 Events.SYSTEMS = defaults;
 
             } catch (Exception e1) {
@@ -77,6 +77,19 @@ public class SystemsData {
             }
 
         }
+    }
+
+    public static List<Planet> getPlanetsFromContainer(SystemsContainer container) {
+        List<Planet> planets = new ArrayList<>();
+        for(PlanetCreator planet : container.planets) {
+            PlanetSelectionScreen.PLANETS.add(planet.planetInfo);
+            planets.add(planet.planet);
+            planet.moons.forEach((moon) -> {
+                PlanetSelectionScreen.MOONS.add(moon.moonInfo);
+                planets.add(planet.planet);
+            });
+        }
+        return planets;
     }
 
     public static List<PlanetCreator> getPlanets(SystemsContainer container) {
@@ -91,7 +104,9 @@ public class SystemsData {
         SystemsContainer container = new SystemsContainer();
 
         Random random = new Random();
-        for (int i = 0; i < random.nextInt(2, 10) + 1; i++) {
+        int systems = random.nextInt(NoManCraft.getConfig().minSystems, NoManCraft.getConfig().maxSystems);
+        Stellaris.LOG.error("Generating {} systems", systems);
+        for (int i = 0; i < systems; i++) {
             SystemCreator creator = new SystemCreator();
             creator.changeStarPos(container.systems);
             container.systems.add(creator);

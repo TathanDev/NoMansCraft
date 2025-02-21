@@ -7,6 +7,7 @@
     "SkyRegistryMixin"
   ],
   "mixins": [
+    "AddCustomSurfaceRuleMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -17,12 +17,7 @@ import fr.tathan.nmc.common.creators.SystemsContainer;
 import fr.tathan.nmc.common.data.SystemsData;
 import fr.tathan.nmc.common.networks.packets.SyncSystemPacket;
 import fr.tathan.nmc.common.utils.Utils;
-import fr.tathan.sky_aesthetics.client.data.SkyPropertiesData;
-import fr.tathan.sky_aesthetics.client.skies.PlanetSky;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelStorageSource;
-
-import java.util.ArrayList;
 
 public class Events {
 
@@ -33,25 +28,22 @@ public class Events {
         PlanetSelectionServerEvents.LAUNCH_BUTTON.register((player, planet, rocket, context) -> {
             PlanetCreator creator = null;
 
-            for(SystemCreator system : SYSTEMS.systems) {
-                for(PlanetCreator planetCreator : system.getPlanets()) {
-                    if(planetCreator.planet.dimension().equals(planet.dimension())) {
+            for(PlanetCreator planetCreator : SYSTEMS.planets) {
+                if(planetCreator.planet.dimension().equals(planet.dimension())) {
+                    creator = planetCreator;
+                    break;
+                }
+                for(MoonCreator moon : planetCreator.moons) {
+                    if(moon.planet.dimension().equals(planet.dimension())) {
                         creator = planetCreator;
                         break;
                     }
-                    for(MoonCreator moon : planetCreator.moons) {
-                        if(moon.planet.dimension().equals(planet.dimension())) {
-                            creator = planetCreator;
-                            break;
-                        }
-                    }
                 }
-                if (creator != null) break;
             }
-            if(creator == null) return EventResult.pass();
-            Utils.generateWorld(context, creator);
 
-            Stellaris.LOG.error("Launching to {}", creator.name);
+            if(creator == null) return EventResult.pass();
+
+            Utils.generateWorld(context, creator);
 
             return EventResult.pass();
         });

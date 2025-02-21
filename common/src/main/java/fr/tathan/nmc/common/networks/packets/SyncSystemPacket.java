@@ -2,6 +2,8 @@ package fr.tathan.nmc.common.networks.packets;
 
 import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.client.screens.PlanetSelectionScreen;
+import com.st0x0ef.stellaris.common.data.planets.Planet;
+import com.st0x0ef.stellaris.common.data.planets.StellarisData;
 import dev.architectury.networking.NetworkManager;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemCreator;
@@ -12,6 +14,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 
 public class SyncSystemPacket implements CustomPacketPayload {
 
@@ -39,19 +43,20 @@ public class SyncSystemPacket implements CustomPacketPayload {
 
 
     public static void handle(SyncSystemPacket packet, NetworkManager.PacketContext context) {
-        Stellaris.LOG.error("Env : " + context.getEnv().name());
         Events.SYSTEMS = packet.container;
-        Stellaris.LOG.error("Adding planet: " + packet.container);
-
+        ArrayList<Planet> planets = new ArrayList<>();
         for(SystemCreator system : packet.container.systems) {
             PlanetSelectionScreen.STARS.add(system.celestialBody);
         }
         for(PlanetCreator planet : packet.container.planets) {
             PlanetSelectionScreen.PLANETS.add(planet.planetInfo);
+            planets.add(planet.planet);
             planet.moons.forEach((moon) -> {
                 PlanetSelectionScreen.MOONS.add(moon.moonInfo);
+                planets.add(planet.planet);
             });
         }
+        StellarisData.addPlanets(planets);
     }
 
     @Override
