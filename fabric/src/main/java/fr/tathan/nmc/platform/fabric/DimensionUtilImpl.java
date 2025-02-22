@@ -12,10 +12,6 @@ import qouteall.dimlib.api.DimensionAPI;
 
 public class DimensionUtilImpl {
 
-    public static ServerLevel createPlanet(MinecraftServer server, ResourceLocation location, NoiseBasedChunkGenerator chunkGenerator, Holder<DimensionType> dimensionType) {
-        return getPlanet(server, location, chunkGenerator, dimensionType);
-    }
-
     @Nullable
     public static ServerLevel getPlanet(MinecraftServer server, ResourceLocation location, NoiseBasedChunkGenerator chunkGenerator, Holder<DimensionType> dimensionType) {
         //TODO Add random seed !
