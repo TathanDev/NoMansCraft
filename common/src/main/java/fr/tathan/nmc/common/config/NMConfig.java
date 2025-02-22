@@ -10,22 +10,37 @@ public class NMConfig implements ConfigData {
 
     @ConfigEntry.Category("planets")
     public int minPlanets = 1;
+
     @ConfigEntry.Category("planets")
     public int maxPlanets = 6;
 
     @ConfigEntry.Category("planets")
-    @ConfigEntry.BoundedDiscrete(min = 0, max = 10)
-    @ConfigEntry.Gui.Tooltip(count = 2)
-    public int oxygenChance = 2;
+    public int planetDistanceFromEarth = 900000;
 
     @ConfigEntry.Category("planets")
-    public int planetDistanceFromEarth = 900000;
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
+    @ConfigEntry.Gui.Tooltip(count = 2)
+    public int largeWorldChance = 80;
+
+    @ConfigEntry.Category("planets")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
+    @ConfigEntry.Gui.Tooltip(count = 2)
+    public int amplifiedWorldChance = 85;
+
+    @ConfigEntry.Category("planets")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
+    @ConfigEntry.Gui.Tooltip(count = 2)
+    public int oxygenChance = 20;
 
 
     @ConfigEntry.Category("systems")
     public int minSystems = 3;
+
     @ConfigEntry.Category("systems")
     public int maxSystems = 6;
+
+
+
 
     @Override
     public void validatePostLoad() throws ValidationException {

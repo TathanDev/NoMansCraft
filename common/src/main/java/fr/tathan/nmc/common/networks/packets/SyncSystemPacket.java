@@ -4,6 +4,7 @@ import com.st0x0ef.stellaris.client.screens.PlanetSelectionScreen;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.data.planets.StellarisData;
 import dev.architectury.networking.NetworkManager;
+import fr.tathan.SkyAesthetics;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
@@ -50,6 +51,7 @@ public class SyncSystemPacket implements CustomPacketPayload {
         for(PlanetCreator planet : packet.container.planets) {
             PlanetSelectionScreen.PLANETS.add(planet.planetInfo);
             planets.add(planet.planet);
+            //TODO add skies
             planet.moons.forEach((moon) -> {
                 PlanetSelectionScreen.MOONS.add(moon.moonInfo);
                 planets.add(planet.planet);

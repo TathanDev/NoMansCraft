@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.registry.ReloadListenerRegistry;
 import fr.tathan.nmc.common.config.NMConfig;
-import fr.tathan.nmc.common.data.SystemsData;
 import fr.tathan.nmc.common.data.surface_data.SurfaceRuleData;
 import fr.tathan.nmc.common.events.Events;
 import fr.tathan.nmc.common.networks.NetworkRegistry;

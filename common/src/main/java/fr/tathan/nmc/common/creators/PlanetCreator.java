@@ -42,8 +42,6 @@ public class PlanetCreator {
         return CODEC_SUPPLIER.get();
     }
 
-
-
     public final boolean canHaveMoon;
     public List<MoonCreator> moons = new ArrayList<>();
     public final Planet planet;
@@ -131,7 +129,7 @@ public class PlanetCreator {
     }
 
     public Planet setPlanetInfo() {
-        boolean oxygen = Math.random() > (double) NoManCraft.getConfig().oxygenChance / 10;
+        boolean oxygen = Math.random() > (double) NoManCraft.getConfig().oxygenChance / 100;
         float gravity = (float) Mth.clamp((Math.random() + Math.random()) * 10, 0.1, 12);
 
         return new Planet(this.system.system, "planet.nmc." + Utils.generateResourcelocation(this.name).getPath(), this.name, Utils.generateResourcelocation(this.name), oxygen, temperature.temperature(), NoManCraft.getConfig().planetDistanceFromEarth, gravity,

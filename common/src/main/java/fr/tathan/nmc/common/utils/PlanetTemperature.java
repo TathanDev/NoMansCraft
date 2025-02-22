@@ -1,5 +1,7 @@
 package fr.tathan.nmc.common.utils;
 
+import java.util.Random;
+
 public enum PlanetTemperature {
     VERY_COLD(-100)
     , COLD(-10)
@@ -33,17 +35,15 @@ public enum PlanetTemperature {
     }
 
     public static PlanetTemperature randomTemperature() {
-        var random = Math.random();
-        if(random < 0.2) {
-            return VERY_COLD;
-        } else if(random < 0.4) {
-            return COLD;
-        } else if(random < 0.6) {
-            return TEMPERATE;
-        } else if(random < 0.8) {
-            return HOT;
-        } else {
-            return VERY_HOT;
-        }
+        var random = new Random().nextInt(0, 5);
+
+        return switch (random) {
+            case 0 -> VERY_COLD;
+            case 1 -> COLD;
+            case 3 -> HOT;
+            case 4 -> VERY_HOT;
+            default -> TEMPERATE;
+        };
+
     }
 }

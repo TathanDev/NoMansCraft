@@ -9,8 +9,17 @@
   "text.autoconfig.nmc.option.minPlanets": "Minimum planets",
   "text.autoconfig.nmc.option.maxPlanets": "Maximum planets",
   "text.autoconfig.nmc.option.planetDistanceFromEarth": "Distance From Earth",
+
   "text.autoconfig.nmc.option.oxygenChance": "Oxygen Chance",
-  "text.autoconfig.nmc.option.oxygenChance.@Tooltip[0]": "A random number between 0 and 10 will be generated.",
-  "text.autoconfig.nmc.option.oxygenChance.@Tooltip[1]": "If it's higher than this value, the planet will have oxygen."
+  "text.autoconfig.nmc.option.oxygenChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
+  "text.autoconfig.nmc.option.oxygenChance.@Tooltip[1]": "If it's higher than this value, the planet will have oxygen.",
+
+  "text.autoconfig.nmc.option.largeWorldChance": "Large World Chance",
+  "text.autoconfig.nmc.option.largeWorldChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
+  "text.autoconfig.nmc.option.largeWorldChance.@Tooltip[1]": "If it's higher than this value, the planet will have large biomes.",
+
+  "text.autoconfig.nmc.option.amplifiedWorldChance": "Amplified World Chance",
+  "text.autoconfig.nmc.option.amplifiedWorldChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
+  "text.autoconfig.nmc.option.amplifiedWorldChance.@Tooltip[1]": "If it's higher than this value, the planet will be amplified."
 
 }

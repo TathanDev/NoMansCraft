@@ -44,8 +44,8 @@ public class SystemsData {
             }
 
             StellarisData.addPlanets(getPlanetsFromContainer(creator));
-
             Events.SYSTEMS = creator;
+
         } catch (Exception e) {
 
             if (!(e instanceof NoSuchFileException))

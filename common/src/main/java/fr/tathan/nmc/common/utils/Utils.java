@@ -3,9 +3,11 @@ package fr.tathan.nmc.common.utils;
 import com.mojang.datafixers.util.Pair;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import dev.architectury.networking.NetworkManager;
-import dev.galacticraft.dynamicdimensions.api.DynamicDimensionRegistry;
+import fr.tathan.nmc.NoManCraft;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
+import fr.tathan.nmc.common.data.DimensionData;
+import fr.tathan.nmc.platform.DimensionUtil;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.SurfaceRuleData;
@@ -85,7 +87,6 @@ public class Utils {
 
     public static String generatePlanetName() {
         return PlANETS_NAME_PART_1[new Random().nextInt(PlANETS_NAME_PART_1.length)] + " " + PlANETS_NAME_PART_2[new Random().nextInt(PlANETS_NAME_PART_2.length)];
-
     }
 
     public static String generateGalaxyName() {
@@ -99,19 +100,28 @@ public class Utils {
     }
 
     public static void generateWorld(NetworkManager.PacketContext context, PlanetCreator planetInfo) {
-        DynamicDimensionRegistry dimRegistry = DynamicDimensionRegistry.from(context.getPlayer().getServer());
         Planet planet = planetInfo.planet;
 
         context.registryAccess().registry(Registries.NOISE_SETTINGS).ifPresent((registry) -> {
 
             NoiseGeneratorSettings generatorSettings = generatorSettings(context.registryAccess(), planetInfo);
-            DimensionType type = new DimensionType(OptionalLong.empty(), true, false, planet.temperature() >= 50, true, 1.0D, true, false, -64, 384, 384, BlockTags.INFINIBURN_OVERWORLD, BuiltinDimensionTypes.OVERWORLD_EFFECTS, (float) Mth.clamp(Math.random(), 0f, 0.2f), new DimensionType.MonsterSettings(false, true, UniformInt.of(0, 7), 0));
+            Climate.ParameterList<Holder<Biome>> parameters = createParameters(context.registryAccess(), planetInfo);
+            NoiseBasedChunkGenerator generator = new NoiseBasedChunkGenerator(MultiNoiseBiomeSource.createFromList(parameters), registry.wrapAsHolder(generatorSettings));
 
+            Registry<DimensionType> dimensionTypes = context.registryAccess().registry(Registries.DIMENSION_TYPE).get();
 
-            NoiseBasedChunkGenerator generator = new NoiseBasedChunkGenerator(MultiNoiseBiomeSource.createFromList(createParameters(context.registryAccess(), planetInfo)), registry.wrapAsHolder(generatorSettings));
+            Holder<DimensionType> holder;
+            if(planetInfo.temperature == PlanetTemperature.VERY_HOT) {
+                holder = dimensionTypes.getHolderOrThrow(BuiltinDimensionTypes.NETHER);
+            } else {
+                holder = dimensionTypes.getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD);
+            }
 
-            ServerLevel level = dimRegistry.createDynamicDimension(planet.dimension(), generator, type);
-
+            ServerLevel level = DimensionUtil.createPlanet(context.getPlayer().getServer(), planet.dimension(), generator, holder);
+            if(level == null) {
+                return;
+            }
+            DimensionData.saveDimensionData(level, holder.getRegisteredName(), registry.wrapAsHolder(generatorSettings), parameters);
         });
     }
 
@@ -226,7 +236,7 @@ public class Utils {
 
 
     public static NoiseGeneratorSettings generatorSettings(RegistryAccess registryAccess, PlanetCreator planetInfo) {
-        return new NoiseGeneratorSettings(createNoiseSettings(), getDefaultBlock(planetInfo), getDefaultLiquid(planetInfo), NoiseRouterData.overworld(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE), Math.random() > 0.8, Math.random() > 0.85), SurfaceRuleData.overworld(), (new OverworldBiomeBuilder()).spawnTarget(), getSeaLevel(), false, true, true, false);
+        return new NoiseGeneratorSettings(createNoiseSettings(), getDefaultBlock(planetInfo), getDefaultLiquid(planetInfo), NoiseRouterData.overworld(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE), Math.random() > (double) NoManCraft.getConfig().largeWorldChance / 100, Math.random() > (double) NoManCraft.getConfig().amplifiedWorldChance / 100), SurfaceRuleData.overworld(), (new OverworldBiomeBuilder()).spawnTarget(), getSeaLevel(), false, true, true, false);
     }
 
     public static BlockState getDefaultBlock(PlanetCreator creator) {
