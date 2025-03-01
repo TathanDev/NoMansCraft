@@ -46,7 +46,7 @@ public class SkyUtils {
     }
 
     public static FogSettings getFogSettings(PlanetCreator creator) {
-        float before = (float) (Math.random() * 100);
+        float before = (float) (Math.random() * 100) +  (float) Math.random() * 50;
         float after = before + 100;
 
         return new FogSettings(true, Optional.empty(), Optional.of(new Vector2f(before, after)));
@@ -67,10 +67,10 @@ public class SkyUtils {
             creator.temperature == PlanetTemperature.TEMPERATE,
             Math.random() >= 0.2,
             (int) (Math.random() * 10000 + Math.random() * 10000),
-            Math.random() > 0.8 && creator.temperature == PlanetTemperature.VERY_COLD,
+            Math.random() > 0.8 || creator.temperature == PlanetTemperature.VERY_COLD,
             0.05f,
             color,
-            Optional.of(new Star.ShootingStars(new Random().nextInt(950, 999), new Vec2(20, 100), 0.08f,  0.5f, color, Optional.of(0)))
+            Optional.of(new Star.ShootingStars(new Random().nextInt(960, 1000), new Vec2(20, 100), 0.08f,  0.5f, color, Optional.of(0)))
         );
     }
 

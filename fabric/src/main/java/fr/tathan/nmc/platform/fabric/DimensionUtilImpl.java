@@ -13,12 +13,12 @@ import qouteall.dimlib.api.DimensionAPI;
 public class DimensionUtilImpl {
 
     @Nullable
-    public static ServerLevel getPlanet(MinecraftServer server, ResourceLocation location, NoiseBasedChunkGenerator chunkGenerator, Holder<DimensionType> dimensionType) {
+    public static ServerLevel createPlanet(MinecraftServer server, ResourceLocation location, NoiseBasedChunkGenerator chunkGenerator, Holder<DimensionType> dimensionType) {
         //TODO Add random seed !
-        DimensionAPI.addDimensionDynamically(
+        DimensionAPI.addDimensionIfNotExists(
                 server,
                 location,
-                new LevelStem(dimensionType, chunkGenerator)
+                () -> new LevelStem(dimensionType, chunkGenerator)
         );
         return null;
     }
