@@ -36,7 +36,6 @@ public enum PlanetTemperature {
 
     public static PlanetTemperature randomTemperature() {
         var random = new Random().nextInt(0, 5);
-
         return switch (random) {
             case 0 -> VERY_COLD;
             case 1 -> COLD;
@@ -44,6 +43,5 @@ public enum PlanetTemperature {
             case 4 -> VERY_HOT;
             default -> TEMPERATE;
         };
-
     }
 }

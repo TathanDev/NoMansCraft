@@ -1,12 +1,13 @@
 package fr.tathan.nmc.common.utils;
 
 import com.mojang.datafixers.util.Pair;
+import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import dev.architectury.networking.NetworkManager;
 import fr.tathan.nmc.NoManCraft;
+import fr.tathan.nmc.common.config.NMConfig;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
-import fr.tathan.nmc.common.data.DimensionData;
 import fr.tathan.nmc.platform.DimensionUtil;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
@@ -14,9 +15,6 @@ import net.minecraft.data.worldgen.SurfaceRuleData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
-import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,38 +50,26 @@ public class Utils {
             "Arm", "Drift", "Halo", "Core", "Horizon", "Sphere", "Frontier", "Sanctum"
     };
 
-    public static ResourceLocation[] VERY_COLD_BIOMES = {
-            Biomes.SNOWY_TAIGA.location(),
-            Biomes.FROZEN_OCEAN.location(),
-            Biomes.FROZEN_RIVER.location(),
-            Biomes.DEEP_COLD_OCEAN.location(),
-            ResourceLocation.fromNamespaceAndPath("stellaris", "mars_ice_spikes"),
-            Biomes.ICE_SPIKES.location()
-    };
 
-    public static ResourceLocation[] COLD_BIOMES = {
-            Biomes.TAIGA.location(),
-            Biomes.SNOWY_TAIGA.location(),
-            Biomes.FROZEN_OCEAN.location(),
-            Biomes.FROZEN_RIVER.location(),
-            Biomes.DEEP_COLD_OCEAN.location(),
-            Biomes.OCEAN.location(),
-            Biomes.FROZEN_OCEAN.location()
-    };
+    public static ResourceLocation[] getHotBiomesList() {
+        List<ResourceLocation> list = new ArrayList<>(NoManCraft.getConfig().hotBiomes);
+        return list.toArray(new ResourceLocation[0]);
+    }
 
-    public static ResourceLocation[] VERY_HOT_BIOMES = {
-            Biomes.NETHER_WASTES.location(),
-            Biomes.BASALT_DELTAS.location(),
-            ResourceLocation.fromNamespaceAndPath("stellaris", "mercury"),
-            ResourceLocation.fromNamespaceAndPath("stellaris", "infernal_venus_barrens")
-    };
+    public static ResourceLocation[] getVeryHotBiomesList() {
+        List<ResourceLocation> list = new ArrayList<>(NoManCraft.getConfig().veryHotBiomes);
+        return list.toArray(new ResourceLocation[0]);
+    }
 
-    public static ResourceLocation[] HOT_BIOMES = {
-            Biomes.DESERT.location(),
-            Biomes.SAVANNA_PLATEAU.location(),
-            Biomes.BADLANDS.location(),
-    };
+    public static ResourceLocation[] getVeryColdBiomesList() {
+        List<ResourceLocation> list = new ArrayList<>(NoManCraft.getConfig().veryColdBiomes);
+        return list.toArray(new ResourceLocation[0]);
+    }
 
+    public static ResourceLocation[] getColdBiomesList() {
+        List<ResourceLocation> list = new ArrayList<>(NoManCraft.getConfig().coldBiomes);
+        return list.toArray(new ResourceLocation[0]);
+    }
 
     public static String generatePlanetName() {
         return PlANETS_NAME_PART_1[new Random().nextInt(PlANETS_NAME_PART_1.length)] + " " + PlANETS_NAME_PART_2[new Random().nextInt(PlANETS_NAME_PART_2.length)];
@@ -118,10 +104,7 @@ public class Utils {
             }
 
             ServerLevel level = DimensionUtil.createPlanet(context.getPlayer().getServer(), planet.dimension(), generator, holder);
-            if(level == null) {
-                return;
-            }
-            DimensionData.saveDimensionData(level, holder.getRegisteredName(), registry.wrapAsHolder(generatorSettings), parameters);
+            
         });
     }
 
@@ -182,7 +165,6 @@ public class Utils {
     public static ArrayList<ResourceKey<Biome>> getBiomes(PlanetCreator planetInfo) {
         return switch (planetInfo.temperature) {
             case VERY_HOT -> getVeryHotBiomes();
-            case VERY_COLD -> getVeryColdBiomes();
             case HOT -> getHotBiomes();
             case COLD -> getColdBiomes();
             default -> getVeryColdBiomes();
@@ -193,12 +175,12 @@ public class Utils {
     public static ArrayList<ResourceKey<Biome>> getVeryColdBiomes() {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
         while (biomes.size() < 7) {
-            int random = new Random().nextInt(VERY_COLD_BIOMES.length);
-            biomes.add(ResourceKey.create(Registries.BIOME, VERY_COLD_BIOMES[random]));
+            int random = new Random().nextInt(getVeryColdBiomesList().length);
+            biomes.add(ResourceKey.create(Registries.BIOME, getVeryColdBiomesList()[random]));
         }
         while (biomes.size() < 10) {
-            int random = new Random().nextInt(COLD_BIOMES.length);
-            biomes.add(ResourceKey.create(Registries.BIOME, COLD_BIOMES[random]));
+            int random = new Random().nextInt(getColdBiomesList().length);
+            biomes.add(ResourceKey.create(Registries.BIOME, getColdBiomesList()[random]));
         }
         return biomes;
     }
@@ -206,12 +188,12 @@ public class Utils {
     public static ArrayList<ResourceKey<Biome>> getVeryHotBiomes() {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
         while (biomes.size() < 7) {
-            int random = new Random().nextInt(VERY_HOT_BIOMES.length);
-            biomes.add(ResourceKey.create(Registries.BIOME, VERY_HOT_BIOMES[random]));
+            int random = new Random().nextInt(getVeryHotBiomesList().length);
+            biomes.add(ResourceKey.create(Registries.BIOME, getVeryHotBiomesList()[random]));
         }
         while (biomes.size() < 10) {
-            int random = new Random().nextInt(HOT_BIOMES.length);
-            biomes.add(ResourceKey.create(Registries.BIOME, HOT_BIOMES[random]));
+            int random = new Random().nextInt(getHotBiomesList().length);
+            biomes.add(ResourceKey.create(Registries.BIOME, getHotBiomesList()[random]));
         }
         return biomes;
     }
@@ -219,8 +201,8 @@ public class Utils {
     public static ArrayList<ResourceKey<Biome>> getHotBiomes() {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
         while (biomes.size() < 10) {
-            int random = new Random().nextInt(HOT_BIOMES.length);
-            biomes.add(ResourceKey.create(Registries.BIOME, HOT_BIOMES[random]));
+            int random = new Random().nextInt(getHotBiomesList().length);
+            biomes.add(ResourceKey.create(Registries.BIOME, getHotBiomesList()[random]));
         }
         return biomes;
     }
@@ -228,8 +210,8 @@ public class Utils {
     public static ArrayList<ResourceKey<Biome>> getColdBiomes() {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
         while (biomes.size() < 10) {
-            int random = new Random().nextInt(COLD_BIOMES.length);
-            biomes.add(ResourceKey.create(Registries.BIOME, COLD_BIOMES[random]));
+            int random = new Random().nextInt(getColdBiomesList().length);
+            biomes.add(ResourceKey.create(Registries.BIOME, getColdBiomesList()[random]));
         }
         return biomes;
     }
@@ -241,7 +223,7 @@ public class Utils {
 
     public static BlockState getDefaultBlock(PlanetCreator creator) {
         if( creator.temperature == PlanetTemperature.VERY_HOT) {
-            return Blocks.MAGMA_BLOCK.defaultBlockState();
+            return Blocks.BLACKSTONE.defaultBlockState();
         }
         return creator.temperature == PlanetTemperature.VERY_COLD ? Blocks.PACKED_ICE.defaultBlockState() : Blocks.STONE.defaultBlockState();
     }

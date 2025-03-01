@@ -140,7 +140,7 @@ public class PlanetCreator {
         return new PlanetInfo(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/star.png"),
                 this.name,
                 this.distanceFromStar,
-                (int) Math.clamp(((Math.random() * 10000) - distanceFromStar * 100L) + this.distanceFromStar * 2, 1000, 20000),
+                (int) Math.clamp(((Math.random() * 100000) - distanceFromStar * 10L) + this.distanceFromStar * Math.random() * 10, 5000, 20000),
                 10,
                 10,
                 this.system.celestialBody,
