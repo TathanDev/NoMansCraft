@@ -5,7 +5,7 @@ No Man's craft is a mod that allow you to explore completely random star systems
 ## To Do 
 
 ### Beta
-- [ ] Custom Planet
+- [x] Custom Planet
 
 ### Release
 - [ ] Generated Planet Texture
