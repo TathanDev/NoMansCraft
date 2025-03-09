@@ -7,15 +7,12 @@ import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.client.screens.PlanetSelectionScreen;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.data.planets.StellarisData;
-import com.st0x0ef.stellaris.common.network.packets.SyncWidgetsTanksPacket;
-import dev.architectury.networking.NetworkManager;
 import fr.tathan.nmc.NoManCraft;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
 import fr.tathan.nmc.common.events.Events;
 import fr.tathan.nmc.common.utils.Utils;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.GsonHelper;
 
 import java.io.BufferedReader;

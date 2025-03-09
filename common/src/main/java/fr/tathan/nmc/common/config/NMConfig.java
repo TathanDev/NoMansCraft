@@ -38,6 +38,15 @@ public class NMConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip(count = 2)
     public int oxygenChance = 20;
 
+    @ConfigEntry.Category("planets")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
+    @ConfigEntry.Gui.Tooltip(count = 2)
+    public int stormyPlanetChance = 20;
+
+    @ConfigEntry.Category("planets")
+    @ConfigEntry.BoundedDiscrete(min = 1000, max = 30000)
+    public int minLightningFrequency = 12000;
+
 
     @ConfigEntry.Category("systems")
     public int minSystems = 3;
@@ -47,42 +56,43 @@ public class NMConfig implements ConfigData {
 
     @ConfigEntry.Gui.Excluded
     @ConfigEntry.Category("planets")
-    public List<ResourceLocation> veryColdBiomes =  List.of(
-            Biomes.SNOWY_TAIGA.location(),
-            Biomes.FROZEN_OCEAN.location(),
-            Biomes.FROZEN_RIVER.location(),
-            Biomes.DEEP_COLD_OCEAN.location(),
-            ResourceLocation.fromNamespaceAndPath("stellaris", "mars_ice_spikes"),
-            Biomes.ICE_SPIKES.location()
+    public List<String> veryColdBiomes =  List.of(
+            Biomes.SNOWY_TAIGA.location().toString(),
+            Biomes.FROZEN_OCEAN.location().toString(),
+            Biomes.FROZEN_RIVER.location().toString(),
+            Biomes.DEEP_COLD_OCEAN.location().toString(),
+            ResourceLocation.fromNamespaceAndPath("stellaris", "mars_ice_spikes").toString(),
+            Biomes.ICE_SPIKES.location().toString()
+    );
+
+
+    @ConfigEntry.Gui.Excluded
+    @ConfigEntry.Category("planets")
+    public List<String> coldBiomes =  List.of(
+            Biomes.TAIGA.location().toString(),
+            Biomes.SNOWY_TAIGA.location().toString(),
+            Biomes.FROZEN_OCEAN.location().toString(),
+            Biomes.FROZEN_RIVER.location().toString(),
+            Biomes.DEEP_COLD_OCEAN.location().toString(),
+            Biomes.OCEAN.location().toString(),
+            Biomes.FROZEN_OCEAN.location().toString()
     );
 
     @ConfigEntry.Gui.Excluded
     @ConfigEntry.Category("planets")
-    public List<ResourceLocation> coldBiomes =  List.of(
-            Biomes.TAIGA.location(),
-            Biomes.SNOWY_TAIGA.location(),
-            Biomes.FROZEN_OCEAN.location(),
-            Biomes.FROZEN_RIVER.location(),
-            Biomes.DEEP_COLD_OCEAN.location(),
-            Biomes.OCEAN.location(),
-            Biomes.FROZEN_OCEAN.location()
+    public List<String> veryHotBiomes = List.of(
+            Biomes.NETHER_WASTES.location().toString(),
+            Biomes.BASALT_DELTAS.location().toString(),
+            ResourceLocation.fromNamespaceAndPath("stellaris", "mercury").toString(),
+            ResourceLocation.fromNamespaceAndPath("stellaris", "infernal_venus_barrens").toString()
     );
 
     @ConfigEntry.Gui.Excluded
     @ConfigEntry.Category("planets")
-    public List<ResourceLocation> veryHotBiomes = List.of(
-            Biomes.NETHER_WASTES.location(),
-            Biomes.BASALT_DELTAS.location(),
-            ResourceLocation.fromNamespaceAndPath("stellaris", "mercury"),
-            ResourceLocation.fromNamespaceAndPath("stellaris", "infernal_venus_barrens")
-    );
-
-    @ConfigEntry.Gui.Excluded
-    @ConfigEntry.Category("planets")
-    public List<ResourceLocation> hotBiomes = List.of(
-            Biomes.DESERT.location(),
-            Biomes.SAVANNA_PLATEAU.location(),
-            Biomes.BADLANDS.location()
+    public List<String> hotBiomes = List.of(
+            Biomes.DESERT.location().toString(),
+            Biomes.SAVANNA_PLATEAU.location().toString(),
+            Biomes.BADLANDS.location().toString()
     );
 
 

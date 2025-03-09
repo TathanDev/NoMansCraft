@@ -2,6 +2,7 @@ package fr.tathan.nmc;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.st0x0ef.stellaris.Stellaris;
 import dev.architectury.registry.ReloadListenerRegistry;
 import fr.tathan.nmc.common.config.NMConfig;
 import fr.tathan.nmc.common.data.surface_data.SurfaceRuleData;

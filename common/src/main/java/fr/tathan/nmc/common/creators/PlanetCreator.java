@@ -13,9 +13,12 @@ import fr.tathan.sky_aesthetics.client.skies.record.SkyProperties;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.function.Supplier;
 
 public class PlanetCreator {
@@ -29,12 +32,13 @@ public class PlanetCreator {
                     Planet.CODEC.fieldOf("planet").forGetter(s -> s.planet),
                     PlanetInfo.CODEC.fieldOf("planetInfo").forGetter(s -> s.planetInfo),
                     MoonCreator.codec().listOf().fieldOf("moons").forGetter(s -> s.moons), // Recursive call
-                    SkyProperties.CODEC.fieldOf("sky").forGetter(s -> s.sky)
-            ).apply(instance, (canHaveMoon, systemName, distanceFromStar, name, planet, planetInfo, moons, sky) -> {
+                    SkyProperties.CODEC.fieldOf("sky").forGetter(s -> s.sky),
+                    Planet.StormParameters.CODEC.optionalFieldOf("stormParameters").forGetter(s -> s.stormParameters)
+            ).apply(instance, (canHaveMoon, systemName, distanceFromStar, name, planet, planetInfo, moons, sky, storm) -> {
                 // Need to find the SystemCreator based on the systemName during deserialization
                 // This requires access to the list of systems (e.g., Events.SYSTEMS)
                 // For now, we'll pass null and fix it later (see deserialization notes below)
-                return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName);
+                return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, storm);
             }))
     );
 
@@ -52,9 +56,9 @@ public class PlanetCreator {
     public final int distanceFromStar;
     public final SkyProperties sky;
     private final String systemName;
+    public final Optional<Planet.StormParameters> stormParameters;
 
-
-    public PlanetCreator(boolean canHaveMoon, SystemCreator system, int distanceFromStar, String name, Planet planet, PlanetInfo planetInfo, List<MoonCreator> moons, SkyProperties sky, String systemName) {
+    public PlanetCreator(boolean canHaveMoon, SystemCreator system, int distanceFromStar, String name, Planet planet, PlanetInfo planetInfo, List<MoonCreator> moons, SkyProperties sky, String systemName, Optional<Planet.StormParameters> stormParameters) {
         this.canHaveMoon = canHaveMoon;
         this.system = system;
         this.distanceFromStar = distanceFromStar;
@@ -64,22 +68,24 @@ public class PlanetCreator {
         this.moons = moons;
         this.sky = sky;
         this.systemName = systemName;
+        this.stormParameters = stormParameters;
 
     }
 
-    public static void toNetwork(PlanetCreator system, final RegistryFriendlyByteBuf buffer) {
-        buffer.writeBoolean(system.canHaveMoon);
+    public static void toNetwork(PlanetCreator planet, final RegistryFriendlyByteBuf buffer) {
+        buffer.writeBoolean(planet.canHaveMoon);
         //Null because we pass a null instance of SystemCreator
-        buffer.writeInt(system.distanceFromStar);
-        buffer.writeUtf(system.name);
-        NetworkHelper.ToNetwork.planet(buffer, system.planet);
-        NetworkHelper.ToNetwork.planetInfo(buffer, system.planetInfo);
-        buffer.writeInt(system.moons.size());
-        system.moons.forEach((moon) -> {
+        buffer.writeInt(planet.distanceFromStar);
+        buffer.writeUtf(planet.name);
+        NetworkHelper.ToNetwork.planet(buffer, planet.planet);
+        NetworkHelper.ToNetwork.planetInfo(buffer, planet.planetInfo);
+        buffer.writeInt(planet.moons.size());
+        planet.moons.forEach((moon) -> {
             MoonCreator.toNetwork(moon, buffer);
         });
-        NetworkHelper.ToNetwork.skyProperties(buffer, system.sky);
-        buffer.writeUtf(system.systemName);
+        NetworkHelper.ToNetwork.skyProperties(buffer, planet.sky);
+        buffer.writeUtf(planet.systemName);
+        buffer.writeOptional(planet.stormParameters, (friendlyByteBuf, storm) -> storm.toNetwork(buffer));
     }
 
     public static PlanetCreator fromNetwork(final RegistryFriendlyByteBuf buffer) {
@@ -94,7 +100,8 @@ public class PlanetCreator {
         }
         var sky = NetworkHelper.FromNetwork.skyProperties(buffer);
         var systemName = buffer.readUtf();
-        return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName);
+        var stormParameters = buffer.readOptional(Planet.StormParameters::readBuffer);
+        return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, stormParameters);
     }
 
     public PlanetCreator(SystemCreator system) {
@@ -112,6 +119,7 @@ public class PlanetCreator {
         this.system = system;
         this.distanceFromStar = distanceFromStar;
         this.name = Utils.generatePlanetName();
+        this.stormParameters = stormParameters();
         this.planet = setPlanetInfo();
         this.planetInfo = planetInfo();
         this.moons = createMoons();
@@ -132,7 +140,7 @@ public class PlanetCreator {
         boolean oxygen = Math.random() > (double) NoManCraft.getConfig().oxygenChance / 100;
         float gravity = (float) Mth.clamp((Math.random() + Math.random()) * 10, 0.1, 12);
 
-        return new Planet(this.system.system, "planet.nmc." + Utils.generateResourcelocation(this.name).getPath(), this.name, Utils.generateResourcelocation(this.name), oxygen, temperature.temperature(), NoManCraft.getConfig().planetDistanceFromEarth, gravity,
+        return new Planet(this.system.system, "planet.nmc." + Utils.generateResourcelocation(this.name).getPath(), this.name, Utils.generateResourcelocation(this.name), oxygen, temperature.temperature(), NoManCraft.getConfig().planetDistanceFromEarth, gravity, this.stormParameters,
                  new PlanetTextures(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/planet.png"), ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/planet.png")));
     }
 
@@ -149,6 +157,14 @@ public class PlanetCreator {
                 Utils.generateResourcelocation(this.name).getPath()
         );
     }
+
+    public Optional<Planet.StormParameters>  stormParameters() {
+        Random random = new Random();
+        if(Math.random() <= (double) NoManCraft.getConfig().stormyPlanetChance / 100) return Optional.empty();
+
+        return Optional.of( new Planet.StormParameters(new Random().nextInt(NoManCraft.getConfig().minLightningFrequency, 300000), new Vec3(random.nextInt(255), random.nextInt(255), random.nextInt(255))));
+    }
+
     public void setSystem(SystemCreator system) {
         this.system = system;
     }

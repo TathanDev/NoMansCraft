@@ -72,6 +72,7 @@ public class NetworkHelper {
             byteBuf.writeFloat(planet.temperature());
             byteBuf.writeInt(planet.distanceFromEarth());
             byteBuf.writeFloat(planet.gravity());
+            byteBuf.writeOptional(planet.stormParameters(),  (b, s) -> s.toNetwork(byteBuf));
             planet.textures().toNetwork(byteBuf);
         }
 
@@ -241,7 +242,7 @@ public class NetworkHelper {
         }
 
         public static Planet planet(RegistryFriendlyByteBuf byteBuf) {
-           return new Planet(byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readResourceLocation(), byteBuf.readBoolean(), byteBuf.readFloat(), byteBuf.readInt(), byteBuf.readFloat(), PlanetTextures.fromNetwork(byteBuf));
+           return new Planet(byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readResourceLocation(), byteBuf.readBoolean(), byteBuf.readFloat(), byteBuf.readInt(), byteBuf.readFloat(), byteBuf.readOptional((b) -> Planet.StormParameters.readBuffer(byteBuf)),  PlanetTextures.fromNetwork(byteBuf));
         }
 
         public static CloudSettings cloudSettings(RegistryFriendlyByteBuf byteBuf) {

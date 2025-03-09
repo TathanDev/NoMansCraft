@@ -60,12 +60,19 @@ subprojects {
             }
         }
         maven {
-            name "Stellaris Snapshots"
-            url "https://maven.odysseyus.fr/snapshots"
+            url "https://cursemaven.com"
+            content {
+                includeGroup "curse.maven"
+            }
         }
+
         maven {
             name "Stellaris Snapshots"
             url "https://maven.odysseyus.fr/releases"
+        }
+        maven {
+            name "Stellaris Snapshots"
+            url "https://maven.odysseyus.fr/snapshots"
         }
         maven { url 'https://jitpack.io' }
 

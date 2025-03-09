@@ -34,12 +34,7 @@ public class SystemCreator {
                         return planetNames;
                     }),
                     SystemBox.CODEC.fieldOf("systemBox").forGetter(s -> s.systemBox)
-            ).apply(instance, (name, system, celestialBody, planetNames, systemBox) -> {
-                // Need to find the PlanetCreator objects based on the planetNames during deserialization
-                // This requires access to the list of planets (e.g., from the SystemsData)
-                // For now, we'll pass an empty list and fix it later (see deserialization notes below)
-                return new SystemCreator(name, system, celestialBody, new ArrayList<>(), systemBox, planetNames);
-            }))
+            ).apply(instance, (name, system, celestialBody, planetNames, systemBox) -> new SystemCreator(name, system, celestialBody, new ArrayList<>(), systemBox, planetNames)))
     );
 
     public static Codec<SystemCreator> codec() {

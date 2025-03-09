@@ -1,11 +1,9 @@
 package fr.tathan.nmc.common.utils;
 
 import com.mojang.datafixers.util.Pair;
-import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import dev.architectury.networking.NetworkManager;
 import fr.tathan.nmc.NoManCraft;
-import fr.tathan.nmc.common.config.NMConfig;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
 import fr.tathan.nmc.platform.DimensionUtil;
@@ -52,22 +50,22 @@ public class Utils {
 
 
     public static ResourceLocation[] getHotBiomesList() {
-        List<ResourceLocation> list = new ArrayList<>(NoManCraft.getConfig().hotBiomes);
+        List<ResourceLocation> list = new ArrayList<>(getBiomesFromStrings(NoManCraft.getConfig().hotBiomes));
         return list.toArray(new ResourceLocation[0]);
     }
 
     public static ResourceLocation[] getVeryHotBiomesList() {
-        List<ResourceLocation> list = new ArrayList<>(NoManCraft.getConfig().veryHotBiomes);
+        List<ResourceLocation> list = new ArrayList<>(getBiomesFromStrings(NoManCraft.getConfig().veryHotBiomes));
         return list.toArray(new ResourceLocation[0]);
     }
 
     public static ResourceLocation[] getVeryColdBiomesList() {
-        List<ResourceLocation> list = new ArrayList<>(NoManCraft.getConfig().veryColdBiomes);
+        List<ResourceLocation> list = new ArrayList<>(getBiomesFromStrings(NoManCraft.getConfig().veryColdBiomes));
         return list.toArray(new ResourceLocation[0]);
     }
 
     public static ResourceLocation[] getColdBiomesList() {
-        List<ResourceLocation> list = new ArrayList<>(NoManCraft.getConfig().coldBiomes);
+        List<ResourceLocation> list = new ArrayList<>(getBiomesFromStrings(NoManCraft.getConfig().coldBiomes));
         return list.toArray(new ResourceLocation[0]);
     }
 
@@ -97,6 +95,8 @@ public class Utils {
             Registry<DimensionType> dimensionTypes = context.registryAccess().registry(Registries.DIMENSION_TYPE).get();
 
             Holder<DimensionType> holder;
+
+
             if(planetInfo.temperature == PlanetTemperature.VERY_HOT) {
                 holder = dimensionTypes.getHolderOrThrow(BuiltinDimensionTypes.NETHER);
             } else {
@@ -157,6 +157,7 @@ public class Utils {
                         biomes.getOrThrow(getRandomBiome(planetBiomes)))
         ));
     }
+
 
     public static ResourceKey<Biome> getRandomBiome(ArrayList<ResourceKey<Biome>> biomes) {
         return biomes.get(new Random().nextInt(biomes.size()));
@@ -265,4 +266,9 @@ public class Utils {
         }));
         return planets;
     }
+
+    public static List<ResourceLocation> getBiomesFromStrings(List<String> biomes) {
+        return biomes.stream().map(ResourceLocation::parse).toList();
+    }
+
 }
