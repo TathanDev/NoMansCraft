@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:random_selector",
+  "config": {
+    "default": "nmc:no_leaves_oak_checked",
+    "features": [
+      {
+        "chance": 0.5,
+        "feature": "nmc:no_leaves_oak_checked"
+      }
+    ]
+  }
+}
