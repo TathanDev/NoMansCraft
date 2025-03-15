@@ -9,6 +9,19 @@ architectury {
 
 loom {
     accessWidenerPath.set(project(":common").loom.accessWidenerPath)
+
+    neoForge {
+        runs {
+            data {
+                data()
+                programArgs("--all", "--mod", "nmc")
+                programArgs("--existing", project(":common").file("src/main/resources").absolutePath)
+                programArgs("--output", project(":common").file("src/generated/resources").absolutePath)
+            }
+        }
+    }
+
+
 }
 
 configurations {

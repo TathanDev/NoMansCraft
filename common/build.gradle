@@ -1,6 +1,17 @@
+def generatedResources = file("src/generated")
+
+
 architectury {
     common rootProject.enabled_platforms.split(',')
 }
+
+
+sourceSets {
+    generated {
+        resources.srcDir generatedResources
+    }
+}
+
 
 loom {
     accessWidenerPath = file("src/main/resources/nmc.accesswidener")
