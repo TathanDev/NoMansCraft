@@ -1,6 +1,7 @@
 package fr.tathan.nmc.common.utils;
 
 import com.mojang.datafixers.util.Pair;
+import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import dev.architectury.networking.NetworkManager;
 import fr.tathan.nmc.NoManCraft;
@@ -164,6 +165,7 @@ public class Utils {
     }
 
     public static ArrayList<ResourceKey<Biome>> getBiomes(PlanetCreator planetInfo) {
+        Stellaris.LOG.error("{}", planetInfo.temperature.temperature());
         return switch (planetInfo.temperature) {
             case VERY_HOT -> getVeryHotBiomes();
             case HOT -> getHotBiomes();
@@ -269,6 +271,28 @@ public class Utils {
 
     public static List<ResourceLocation> getBiomesFromStrings(List<String> biomes) {
         return biomes.stream().map(ResourceLocation::parse).toList();
+    }
+
+    public static String getPlanetTexture(PlanetCreator creator) {
+        switch (creator.temperature) {
+            case HOT -> {
+                String[] strArray1 = new String[] {"nmc:textures/sky/hot_planet_1.png"};
+                return strArray1[new Random().nextInt(strArray1.length)];
+            }
+            default -> {
+                String[] strArray2 = new String[] {"nmc:textures/sky/cold_planet_1.png", "nmc:textures/sky/cold_planet_2.png", "nmc:textures/sky/cold_planet_3.png"};
+                return strArray2[new Random().nextInt(strArray2.length)];
+            }
+            case VERY_HOT -> {
+                String[] strArray2 = new String[] {"nmc:textures/sky/very_hot_planet_1.png"};
+                return strArray2[new Random().nextInt(strArray2.length)];
+            }
+            case TEMPERATE -> {
+                String[] strArray2 = new String[] {"nmc:textures/sky/temperate_planet_1.png"};
+                return strArray2[new Random().nextInt(strArray2.length)];
+            }
+        }
+
     }
 
 }
