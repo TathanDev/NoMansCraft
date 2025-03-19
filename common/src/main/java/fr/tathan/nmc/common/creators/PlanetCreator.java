@@ -145,7 +145,7 @@ public class PlanetCreator {
     }
 
     public PlanetInfo planetInfo() {
-        return new PlanetInfo(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/star.png"),
+        return new PlanetInfo(ResourceLocation.parse(Utils.getPlanetTexture(this)),
                 this.name,
                 this.distanceFromStar,
                 (int) Math.clamp(((Math.random() * 100000) - distanceFromStar * 10L) + this.distanceFromStar * Math.random() * 10, 5000, 20000),

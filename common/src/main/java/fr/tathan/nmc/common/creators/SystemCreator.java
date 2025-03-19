@@ -78,7 +78,7 @@ public class SystemCreator {
     }
 
     public CelestialBody generateStar() {
-        return new CelestialBody(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/star.png"),
+        return new CelestialBody(ResourceLocation.parse("stellaris:textures/environment/star/sun.png"),
                 this.name,
                 //X of Solar System + width of Solar System + Number of Systems + random number between 0 and 1000
                 300 + 140  + (float) (Math.random() * (Math.random() * Math.random() * 50 * ( Math.random() * 1000))),

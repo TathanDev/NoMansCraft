@@ -13,7 +13,7 @@ public class BlocksRegistry {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Stellaris.MODID, Registries.BLOCK);
 
-    public static final RegistrySupplier<Block> NO_LEAVE_OAK = BLOCKS.register("no_leave_oak",
+    public static final RegistrySupplier<Block> NO_LEAVE_OAK = BLOCKS.register("no_leaves_oak",
             () -> new SaplingBlock(TreeGrowersRegistry.NO_LEAVES_OAK,
                     BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)));
 

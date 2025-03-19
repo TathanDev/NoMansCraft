@@ -84,7 +84,10 @@ public class NMConfig implements ConfigData {
             Biomes.NETHER_WASTES.location().toString(),
             Biomes.BASALT_DELTAS.location().toString(),
             ResourceLocation.fromNamespaceAndPath("stellaris", "mercury").toString(),
-            ResourceLocation.fromNamespaceAndPath("stellaris", "infernal_venus_barrens").toString()
+            ResourceLocation.fromNamespaceAndPath("stellaris", "infernal_venus_barrens").toString(),
+            ResourceLocation.fromNamespaceAndPath("nmc", "wasteland").toString()
+
+
     );
 
     @ConfigEntry.Gui.Excluded
@@ -92,7 +95,9 @@ public class NMConfig implements ConfigData {
     public List<String> hotBiomes = List.of(
             Biomes.DESERT.location().toString(),
             Biomes.SAVANNA_PLATEAU.location().toString(),
-            Biomes.BADLANDS.location().toString()
+            Biomes.BADLANDS.location().toString(),
+            ResourceLocation.fromNamespaceAndPath("nmc", "wasteland").toString()
+
     );
 
 
