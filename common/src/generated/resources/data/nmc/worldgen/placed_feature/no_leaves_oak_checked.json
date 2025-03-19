@@ -6,7 +6,7 @@
       "predicate": {
         "type": "minecraft:would_survive",
         "state": {
-          "Name": "stellaris:no_leave_oak",
+          "Name": "stellaris:no_leaves_oak",
           "Properties": {
             "stage": "0"
           }
