@@ -47,7 +47,6 @@ subprojects {
         maven { url = 'https://maven.nucleoid.xyz/' }
 
         maven { url "https://maven.exodusstudio.org/releases" }
-        maven { url "https://maven.exodusstudio.org/snapshots"}
 
         maven {
             url = "https://repo.terradevelopment.net/repository/maven-releases"
@@ -66,7 +65,7 @@ subprojects {
         }
 
         maven {
-            name "Stellaris Snapshots"
+            name "Sky Aesthetics"
             url "https://maven.odysseyus.fr/releases"
         }
         maven { url 'https://jitpack.io' }
