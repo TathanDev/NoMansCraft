@@ -3,7 +3,7 @@
   "id": "nmc",
   "version": "${version}",
   "name": "No Man Craft",
-  "description": "A very bad config library !",
+  "description": "Explore an infinity of Planets !",
   "authors": [
     "TATHAN"
   ],
@@ -11,7 +11,7 @@
     "homepage": ""
   },
   "license": "MIT",
-  "icon": "assets/nmc/icon.png",
+  "icon": "nmc.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -28,7 +28,9 @@
     "fabricloader": ">=0.16.10",
     "minecraft": "~1.21",
     "java": ">=21",
-    "fabric-api": "*"
+    "fabric-api": "*",
+    "stellaris": ">=1.3.5",
+    "cloth-config": ">=15.0.140"
   },
   "suggests": {
     "another-mod": "*"
