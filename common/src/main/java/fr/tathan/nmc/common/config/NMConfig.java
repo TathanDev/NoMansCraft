@@ -107,7 +107,9 @@ public class NMConfig implements ConfigData {
             Biomes.DESERT.location().toString(),
             Biomes.SAVANNA_PLATEAU.location().toString(),
             Biomes.BADLANDS.location().toString(),
-            ResourceLocation.fromNamespaceAndPath("nmc", "wasteland").toString()
+            ResourceLocation.fromNamespaceAndPath("nmc", "wasteland").toString(),
+            Biomes.MUSHROOM_FIELDS.location().toString(),
+            Biomes.ERODED_BADLANDS.location().toString()
 
     );
 
