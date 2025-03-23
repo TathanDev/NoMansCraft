@@ -50,6 +50,13 @@ public class NMConfig implements ConfigData {
     @ConfigEntry.BoundedDiscrete(min = 1000, max = 30000)
     public int minLightningFrequency = 12000;
 
+    @ConfigEntry.Category("planets")
+    @ConfigEntry.Gui.Tooltip(count = 2)
+    public int minBiomes = 8;
+
+    @ConfigEntry.Category("planets")
+    public int maxBiomes = 12;
+
 
     @ConfigEntry.Category("systems")
     public int minSystems = 3;

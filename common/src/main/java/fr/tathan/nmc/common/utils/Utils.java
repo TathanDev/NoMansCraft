@@ -171,18 +171,20 @@ public class Utils {
     }
 
     public static ArrayList<ResourceKey<Biome>> getBiomes(PlanetCreator planetInfo) {
+        int biomes = new Random().nextInt(NoManCraft.getConfig().minBiomes, NoManCraft.getConfig().maxBiomes);
+
         return switch (planetInfo.temperature) {
-            case VERY_HOT -> getVeryHotBiomes();
-            case HOT -> getHotBiomes();
-            case COLD -> getColdBiomes();
-            case VERY_COLD -> getVeryColdBiomes();
-            default -> getTemperateBiomes();
+            case VERY_HOT -> getVeryHotBiomes(biomes);
+            case HOT -> getHotBiomes(biomes);
+            case COLD -> getColdBiomes(biomes);
+            case VERY_COLD -> getVeryColdBiomes(biomes);
+            default -> getTemperateBiomes(biomes);
         };
     }
 
-    public static ArrayList<ResourceKey<Biome>> getTemperateBiomes() {
+    public static ArrayList<ResourceKey<Biome>> getTemperateBiomes(int biomeCount) {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
-        while (biomes.size() < 8) {
+        while (biomes.size() < biomeCount - 2) {
             int random = new Random().nextInt(getTemperateBiomesList().length);
             biomes.add(ResourceKey.create(Registries.BIOME, getTemperateBiomesList()[random]));
         }
@@ -194,44 +196,44 @@ public class Utils {
         return biomes;
     }
 
-    public static ArrayList<ResourceKey<Biome>> getVeryColdBiomes() {
+    public static ArrayList<ResourceKey<Biome>> getVeryColdBiomes(int biomeCount) {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
-        while (biomes.size() < 7) {
-            int random = new Random().nextInt(getVeryColdBiomesList().length);
-            biomes.add(ResourceKey.create(Registries.BIOME, getVeryColdBiomesList()[random]));
-        }
-        while (biomes.size() < 10) {
+        while (biomes.size() < 3) {
             int random = new Random().nextInt(getColdBiomesList().length);
             biomes.add(ResourceKey.create(Registries.BIOME, getColdBiomesList()[random]));
         }
+        while (biomes.size() < biomeCount) {
+            int random = new Random().nextInt(getVeryColdBiomesList().length);
+            biomes.add(ResourceKey.create(Registries.BIOME, getVeryColdBiomesList()[random]));
+        }
         return biomes;
     }
 
-    public static ArrayList<ResourceKey<Biome>> getVeryHotBiomes() {
+    public static ArrayList<ResourceKey<Biome>> getVeryHotBiomes(int biomeCount) {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
-        while (biomes.size() < 7) {
+        while (biomes.size() < 3) {
+            int random = new Random().nextInt(getHotBiomesList().length);
+            biomes.add(ResourceKey.create(Registries.BIOME, getHotBiomesList()[random]));
+        }
+        while (biomes.size() < biomeCount) {
             int random = new Random().nextInt(getVeryHotBiomesList().length);
             biomes.add(ResourceKey.create(Registries.BIOME, getVeryHotBiomesList()[random]));
         }
-        while (biomes.size() < 10) {
+        return biomes;
+    }
+
+    public static ArrayList<ResourceKey<Biome>> getHotBiomes(int biomeCount) {
+        ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
+        while (biomes.size() < biomeCount) {
             int random = new Random().nextInt(getHotBiomesList().length);
             biomes.add(ResourceKey.create(Registries.BIOME, getHotBiomesList()[random]));
         }
         return biomes;
     }
 
-    public static ArrayList<ResourceKey<Biome>> getHotBiomes() {
+    public static ArrayList<ResourceKey<Biome>> getColdBiomes(int biomeCount) {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
-        while (biomes.size() < 10) {
-            int random = new Random().nextInt(getHotBiomesList().length);
-            biomes.add(ResourceKey.create(Registries.BIOME, getHotBiomesList()[random]));
-        }
-        return biomes;
-    }
-
-    public static ArrayList<ResourceKey<Biome>> getColdBiomes() {
-        ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
-        while (biomes.size() < 10) {
+        while (biomes.size() < biomeCount) {
             int random = new Random().nextInt(getColdBiomesList().length);
             biomes.add(ResourceKey.create(Registries.BIOME, getColdBiomesList()[random]));
         }

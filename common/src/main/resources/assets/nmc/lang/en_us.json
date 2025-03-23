@@ -26,7 +26,14 @@
   "text.autoconfig.nmc.option.stormyPlanetChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
   "text.autoconfig.nmc.option.stormyPlanetChance.@Tooltip[1]": "If it's higher than this value, the planet will be a stormy planet.",
 
-  "text.autoconfig.nmc.option.minLightningFrequency": "Minium Lightning Frequency",
+  "text.autoconfig.nmc.option.minLightningFrequency": "Minimum Lightning Frequency",
+
+  "text.autoconfig.nmc.option.minBiomes": "Minimum Biomes",
+  "text.autoconfig.nmc.option.maxBiomes": "Maximum Biomes",
+
+  "text.autoconfig.nmc.option.minBiomes.@Tooltip[0]": "A random number between Minimum and Maximum biomes will be generated.",
+  "text.autoconfig.nmc.option.minBiomes.@Tooltip[1]": "This will be the number of biomes on the planet.",
+
 
   "biome.nmc.wasteland": "Wasteland",
   "biome.nmc.big_taiga": "Big Taiga"
