@@ -7,12 +7,15 @@ import com.st0x0ef.stellaris.client.screens.info.PlanetInfo;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.data.planets.PlanetTextures;
 import fr.tathan.nmc.NoManCraft;
+import fr.tathan.nmc.common.config.NMConfig;
 import fr.tathan.nmc.common.utils.*;
 import fr.tathan.sky_aesthetics.client.skies.PlanetSky;
 import fr.tathan.sky_aesthetics.client.skies.record.SkyProperties;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.util.valueproviders.WeightedListInt;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -33,12 +36,13 @@ public class PlanetCreator {
                     PlanetInfo.CODEC.fieldOf("planetInfo").forGetter(s -> s.planetInfo),
                     MoonCreator.codec().listOf().fieldOf("moons").forGetter(s -> s.moons), // Recursive call
                     SkyProperties.CODEC.fieldOf("sky").forGetter(s -> s.sky),
-                    Planet.StormParameters.CODEC.optionalFieldOf("stormParameters").forGetter(s -> s.stormParameters)
-            ).apply(instance, (canHaveMoon, systemName, distanceFromStar, name, planet, planetInfo, moons, sky, storm) -> {
+                    Planet.StormParameters.CODEC.optionalFieldOf("stormParameters").forGetter(s -> s.stormParameters),
+                    Codec.INT.fieldOf("grassColor").forGetter(s -> s.grassColor)
+            ).apply(instance, (canHaveMoon, systemName, distanceFromStar, name, planet, planetInfo, moons, sky, storm, grassColor) -> {
                 // Need to find the SystemCreator based on the systemName during deserialization
                 // This requires access to the list of systems (e.g., Events.SYSTEMS)
                 // For now, we'll pass null and fix it later (see deserialization notes below)
-                return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, storm);
+                return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, storm, grassColor);
             }))
     );
 
@@ -57,8 +61,9 @@ public class PlanetCreator {
     public final SkyProperties sky;
     private final String systemName;
     public final Optional<Planet.StormParameters> stormParameters;
+    public final int grassColor;
 
-    public PlanetCreator(boolean canHaveMoon, SystemCreator system, int distanceFromStar, String name, Planet planet, PlanetInfo planetInfo, List<MoonCreator> moons, SkyProperties sky, String systemName, Optional<Planet.StormParameters> stormParameters) {
+    public PlanetCreator(boolean canHaveMoon, SystemCreator system, int distanceFromStar, String name, Planet planet, PlanetInfo planetInfo, List<MoonCreator> moons, SkyProperties sky, String systemName, Optional<Planet.StormParameters> stormParameters, int grassColor) {
         this.canHaveMoon = canHaveMoon;
         this.system = system;
         this.distanceFromStar = distanceFromStar;
@@ -69,6 +74,7 @@ public class PlanetCreator {
         this.sky = sky;
         this.systemName = systemName;
         this.stormParameters = stormParameters;
+        this.grassColor = grassColor;
 
     }
 
@@ -86,6 +92,7 @@ public class PlanetCreator {
         NetworkHelper.ToNetwork.skyProperties(buffer, planet.sky);
         buffer.writeUtf(planet.systemName);
         buffer.writeOptional(planet.stormParameters, (friendlyByteBuf, storm) -> storm.toNetwork(buffer));
+        buffer.writeInt(planet.grassColor);
     }
 
     public static PlanetCreator fromNetwork(final RegistryFriendlyByteBuf buffer) {
@@ -101,7 +108,8 @@ public class PlanetCreator {
         var sky = NetworkHelper.FromNetwork.skyProperties(buffer);
         var systemName = buffer.readUtf();
         var stormParameters = buffer.readOptional(Planet.StormParameters::readBuffer);
-        return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, stormParameters);
+        var grassColor = buffer.readInt();
+        return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, stormParameters, grassColor);
     }
 
     public PlanetCreator(SystemCreator system) {
@@ -125,6 +133,7 @@ public class PlanetCreator {
         this.moons = createMoons();
         this.sky = SkyUtils.createSky(this);
         this.systemName = system.name; // Store the system name
+        this.grassColor = NMConfig.getPossibleBiomeColors().sample(RandomSource.create());
 
     }
 
@@ -143,6 +152,7 @@ public class PlanetCreator {
         return new Planet(this.system.system, "planet.nmc." + Utils.generateResourcelocation(this.name).getPath(), this.name, Utils.generateResourcelocation(this.name), oxygen, temperature.temperature(), NoManCraft.getConfig().planetDistanceFromEarth, gravity, this.stormParameters,
                  new PlanetTextures(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/planet.png"), ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/planet.png")));
     }
+
 
     public PlanetInfo planetInfo() {
         return new PlanetInfo(ResourceLocation.parse(Utils.getPlanetTexture(this)),

@@ -70,6 +70,12 @@ public class Utils {
         return list.toArray(new ResourceLocation[0]);
     }
 
+    public static ResourceLocation[] getTemperateBiomesList() {
+        List<ResourceLocation> list = new ArrayList<>(getBiomesFromStrings(NoManCraft.getConfig().temperateBiomes));
+        return list.toArray(new ResourceLocation[0]);
+    }
+
+
     public static String generatePlanetName() {
         return PlANETS_NAME_PART_1[new Random().nextInt(PlANETS_NAME_PART_1.length)] + " " + PlANETS_NAME_PART_2[new Random().nextInt(PlANETS_NAME_PART_2.length)];
     }
@@ -165,15 +171,28 @@ public class Utils {
     }
 
     public static ArrayList<ResourceKey<Biome>> getBiomes(PlanetCreator planetInfo) {
-        Stellaris.LOG.error("{}", planetInfo.temperature.temperature());
         return switch (planetInfo.temperature) {
             case VERY_HOT -> getVeryHotBiomes();
             case HOT -> getHotBiomes();
             case COLD -> getColdBiomes();
-            default -> getVeryColdBiomes();
+            case VERY_COLD -> getVeryColdBiomes();
+            default -> getTemperateBiomes();
         };
     }
 
+    public static ArrayList<ResourceKey<Biome>> getTemperateBiomes() {
+        ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
+        while (biomes.size() < 8) {
+            int random = new Random().nextInt(getTemperateBiomesList().length);
+            biomes.add(ResourceKey.create(Registries.BIOME, getTemperateBiomesList()[random]));
+        }
+
+        int random = new Random().nextInt(getColdBiomesList().length);
+        biomes.add(ResourceKey.create(Registries.BIOME, getColdBiomesList()[random]));
+        biomes.add(ResourceKey.create(Registries.BIOME, getHotBiomesList()[random]));
+
+        return biomes;
+    }
 
     public static ArrayList<ResourceKey<Biome>> getVeryColdBiomes() {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
@@ -246,7 +265,7 @@ public class Utils {
         int chances = new Random().nextInt(10);
         if(chances < 2) {
             return new Random().nextInt(100);
-        } else if(chances < 7) {
+        } else if(chances < 8) {
             return 64;
         } else if (chances < 9) {
             return new Random().nextInt(40, 90);
@@ -279,16 +298,16 @@ public class Utils {
                 String[] strArray1 = new String[] {"nmc:textures/sky/hot_planet_1.png"};
                 return strArray1[new Random().nextInt(strArray1.length)];
             }
-            default -> {
-                String[] strArray2 = new String[] {"nmc:textures/sky/cold_planet_1.png", "nmc:textures/sky/cold_planet_2.png", "nmc:textures/sky/cold_planet_3.png"};
-                return strArray2[new Random().nextInt(strArray2.length)];
-            }
             case VERY_HOT -> {
                 String[] strArray2 = new String[] {"nmc:textures/sky/very_hot_planet_1.png"};
                 return strArray2[new Random().nextInt(strArray2.length)];
             }
             case TEMPERATE -> {
                 String[] strArray2 = new String[] {"nmc:textures/sky/temperate_planet_1.png"};
+                return strArray2[new Random().nextInt(strArray2.length)];
+            }
+            default -> {
+                String[] strArray2 = new String[] {"nmc:textures/sky/cold_planet_1.png", "nmc:textures/sky/cold_planet_2.png", "nmc:textures/sky/cold_planet_3.png"};
                 return strArray2[new Random().nextInt(strArray2.length)];
             }
         }

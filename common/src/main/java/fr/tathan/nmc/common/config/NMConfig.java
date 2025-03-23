@@ -4,9 +4,12 @@ import fr.tathan.nmc.NoManCraft;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import net.minecraft.resources.ResourceKey;
+import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.util.random.SimpleWeightedRandomList;
+import net.minecraft.util.valueproviders.ConstantInt;
+import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.WeightedListInt;
 import net.minecraft.world.level.biome.Biomes;
 
 import java.util.List;
@@ -75,7 +78,8 @@ public class NMConfig implements ConfigData {
             Biomes.FROZEN_RIVER.location().toString(),
             Biomes.DEEP_COLD_OCEAN.location().toString(),
             Biomes.OCEAN.location().toString(),
-            Biomes.FROZEN_OCEAN.location().toString()
+            Biomes.FROZEN_OCEAN.location().toString(),
+            ResourceLocation.fromNamespaceAndPath("nmc", "big_taiga").toString()
     );
 
     @ConfigEntry.Gui.Excluded
@@ -100,6 +104,53 @@ public class NMConfig implements ConfigData {
 
     );
 
+    @ConfigEntry.Gui.Excluded
+    @ConfigEntry.Category("planets")
+    public List<String> temperateBiomes = List.of(
+            Biomes.DESERT.location().toString(),
+            Biomes.PLAINS.location().toString(),
+            Biomes.SUNFLOWER_PLAINS.location().toString(),
+            Biomes.FLOWER_FOREST.location().toString(),
+            Biomes.FOREST.location().toString(),
+            Biomes.BIRCH_FOREST.location().toString(),
+            Biomes.TAIGA.location().toString(),
+            Biomes.SNOWY_TAIGA.location().toString(),
+            Biomes.OCEAN.location().toString(),
+            Biomes.DESERT.location().toString(),
+            Biomes.DRIPSTONE_CAVES.location().toString(),
+            Biomes.LUSH_CAVES.location().toString(),
+            Biomes.BEACH.location().toString(),
+            Biomes.GROVE.location().toString(),
+            Biomes.JUNGLE.location().toString(),
+            Biomes.SPARSE_JUNGLE.location().toString(),
+            Biomes.SWAMP.location().toString(),
+            Biomes.SAVANNA_PLATEAU.location().toString(),
+            Biomes.BADLANDS.location().toString(),
+            ResourceLocation.fromNamespaceAndPath("nmc", "big_taiga").toString()
+
+    );
+
+    @ConfigEntry.Gui.Excluded
+    @ConfigEntry.Category("planets")
+    @Comment("This is a list of colors that are possible for the planet. 0 is the default color. This list is weighted. The higher the weight, the more likely the color will be chosen.")
+    public int[][] possibleBiomesColors = new int[][]{
+            {0, 20},
+            {0x41a4c1, 2},
+            {0xff80d9, 2},
+            {0xe5ae60, 2},
+            {0xf36363, 2}
+    };
+
+    public static WeightedListInt getPossibleBiomeColors() {
+        int[][] colors = NoManCraft.getConfig().possibleBiomesColors;
+        SimpleWeightedRandomList.Builder<IntProvider> builder = SimpleWeightedRandomList.<IntProvider>builder();
+
+        for (int[] color : colors) {
+            builder.add(ConstantInt.of(color[0]), color[1]);
+        }
+
+        return new WeightedListInt(builder.build());
+    }
 
     @Override
     public void validatePostLoad() throws ValidationException {

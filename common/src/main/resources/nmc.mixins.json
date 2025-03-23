@@ -7,7 +7,8 @@
     "SkyRegistryMixin"
   ],
   "mixins": [
-    "AddCustomSurfaceRuleMixin"
+    "AddCustomSurfaceRuleMixin",
+    "client.CustomGrassColor"
   ],
   "injectors": {
     "defaultRequire": 1
