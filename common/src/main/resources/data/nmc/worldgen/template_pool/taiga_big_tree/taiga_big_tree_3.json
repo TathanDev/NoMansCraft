@@ -1,0 +1,15 @@
+{
+  "name": "nmc:taiga_big_tree_3",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "nmc:taiga_big_tree/taiga_big_tree_3",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}
