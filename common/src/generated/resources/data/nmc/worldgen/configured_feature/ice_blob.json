@@ -1,0 +1,18 @@
+{
+  "type": "nmc:custom_spire_column",
+  "config": {
+    "block": {
+      "Name": "minecraft:blue_ice"
+    },
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": 6,
+      "min_inclusive": 3
+    },
+    "reach": {
+      "type": "minecraft:uniform",
+      "max_inclusive": 4,
+      "min_inclusive": 2
+    }
+  }
+}

@@ -9,6 +9,7 @@ import fr.tathan.nmc.common.data.surface_data.SurfaceRuleData;
 import fr.tathan.nmc.common.events.Events;
 import fr.tathan.nmc.common.networks.NetworkRegistry;
 import fr.tathan.nmc.common.registry.BlocksRegistry;
+import fr.tathan.nmc.common.registry.FeatureRegistry;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.minecraft.resources.ResourceLocation;
@@ -29,6 +30,7 @@ public final class NoManCraft {
         ReloadListenerRegistry.register(PackType.SERVER_DATA, new SurfaceRuleData());
 
         BlocksRegistry.BLOCKS.register();
+        FeatureRegistry.FEATURES.register();
         NetworkRegistry.init();
         Events.registerEvents();
     }

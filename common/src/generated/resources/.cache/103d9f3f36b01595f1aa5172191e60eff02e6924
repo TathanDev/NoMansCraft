@@ -1,5 +1,7 @@
-// 1.21	2025-03-19T13:37:13.2147617	Registries
+// 1.21	2025-03-28T20:20:30.391331	Registries
+235f855e876ea63a8c8e939df73694501e617679 data/nmc/worldgen/configured_feature/ice_blob.json
 cee5ddd26749c22643c8aeba364ca88d05627aaf data/nmc/worldgen/configured_feature/no_leaves_oak.json
 ffdedc4821a447502d10c136e741625ef3e4c2bb data/nmc/worldgen/configured_feature/no_leaves_oak_spawn.json
+c90cfca6ca19a6a52edfb1adb426eba7dfe5316c data/nmc/worldgen/placed_feature/ice_blob.json
 9f031ee3967f5bc9239862dc0ca75b09d7ea305a data/nmc/worldgen/placed_feature/no_leaves_oak_checked.json
 5c13a445bdc466cda87bf5dd6311010bf0dfaf87 data/nmc/worldgen/placed_feature/no_leaves_oak_placed.json
