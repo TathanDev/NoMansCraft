@@ -1,12 +1,12 @@
 package fr.tathan.nmc.common.utils;
 
 import com.mojang.datafixers.util.Pair;
-import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import dev.architectury.networking.NetworkManager;
 import fr.tathan.nmc.NoManCraft;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
+import fr.tathan.nmc.common.events.custom.PlanetsCreationLifecycle;
 import fr.tathan.nmc.platform.DimensionUtil;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
@@ -110,6 +110,8 @@ public class Utils {
                 holder = dimensionTypes.getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD);
             }
 
+            PlanetsCreationLifecycle.PRE_PLANET_LEVEL_CREATION.invoker().prePlanetLevelCreation(planetInfo, generator, holder, context);
+
             ServerLevel level = DimensionUtil.createPlanet(context.getPlayer().getServer(), planet.dimension(), generator, holder);
             
         });
@@ -126,6 +128,8 @@ public class Utils {
 
         HolderGetter<Biome> biomes = registryAccess.lookupOrThrow(Registries.BIOME);
         ArrayList<ResourceKey<Biome>> planetBiomes = getBiomes(planetInfo);
+
+        PlanetsCreationLifecycle.POST_BIOMES_SELECTION.invoker().postBiomeSelection(planetInfo, planetBiomes);
 
         return new Climate.ParameterList<>(List.of(
                 // Row 1
