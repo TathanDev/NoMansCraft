@@ -23,10 +23,10 @@ public class SkyUtils {
         SkyProperties properties = new SkyProperties(
                 ResourceKey.create(Registries.DIMENSION, creator.planet.dimension()),
                 Optional.of( creator.planet.dimension()),
-                getCloudSettings(creator),
+                Optional.of(getCloudSettings(creator)),
                 Optional.of(getFogSettings(creator)),
                 isRaining(creator),
-                getCustomVanillaObjet(creator),
+                Optional.of(getCustomVanillaObjet(creator)),
                 getStars(creator),
                 Optional.empty(),
                 Optional.empty(),
@@ -42,7 +42,7 @@ public class SkyUtils {
     public static CloudSettings getCloudSettings(PlanetCreator creator) {
         boolean hasClouds = creator.planet.oxygen();
         int cloudHeight = Math.random() > 0.5 ? 100 : 200;
-        return new CloudSettings(hasClouds, cloudHeight, Optional.empty());
+        return new CloudSettings(hasClouds, Optional.of(cloudHeight), Optional.empty());
     }
 
     public static FogSettings getFogSettings(PlanetCreator creator) {
@@ -57,7 +57,7 @@ public class SkyUtils {
     }
 
     public static CustomVanillaObject getCustomVanillaObjet(PlanetCreator creator) {
-        return new CustomVanillaObject(true, BASIC_SUN, 450, 200, true, true, BASIC_MOON, 75, 75);
+        return new CustomVanillaObject(true, Optional.of(BASIC_SUN), Optional.of(450f), Optional.of(20f), true, true, Optional.of(BASIC_MOON), Optional.of(75f), Optional.of(75f));
     }
 
     public static Star getStars(PlanetCreator creator) {
@@ -70,11 +70,12 @@ public class SkyUtils {
             Math.random() > 0.8 || creator.temperature == PlanetTemperature.VERY_COLD,
             0.05f,
             color,
-            Optional.of(new Star.ShootingStars(new Random().nextInt(960, 1000), new Vec2(20, 100), 0.08f,  0.5f, color, Optional.of(0)))
+            Optional.of(new Star.ShootingStars(new Random().nextInt(960, 1000), new Vec2(20, 100), 0.08f,  0.5f, color, Optional.of(0))),
+            Optional.empty()
         );
     }
 
     public static SkyColor getSkyColor(PlanetCreator creator) {
-        return new SkyColor(false, new Vector4f());
+        return new SkyColor(false, Optional.of(new Vector4f()));
     }
 }

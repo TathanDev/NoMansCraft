@@ -72,6 +72,8 @@ public class NMConfig implements ConfigData {
             Biomes.FROZEN_RIVER.location().toString(),
             Biomes.DEEP_COLD_OCEAN.location().toString(),
             ResourceLocation.fromNamespaceAndPath("stellaris", "mars_ice_spikes").toString(),
+            ResourceLocation.fromNamespaceAndPath("nmc", "iced_desert").toString(),
+
             Biomes.ICE_SPIKES.location().toString()
     );
 

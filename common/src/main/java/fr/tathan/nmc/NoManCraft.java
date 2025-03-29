@@ -15,6 +15,8 @@ import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.function.BiConsumer;
 
@@ -22,6 +24,7 @@ public final class NoManCraft {
     public static final String MODID = "nmc";
     public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     public static NMConfig CONFIG = null;
+    public static final Logger LOG = LoggerFactory.getLogger("NoMansCraft");
 
 
     public static void init() {

@@ -26,10 +26,12 @@ public class SurfaceRuleData extends SimpleJsonResourceReloadListener  {
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profiler) {
+
         SURFACE_RULE_DATA_ADDERS.clear();
         object.forEach((key, value) -> {
             JsonObject json = GsonHelper.convertToJsonObject(value, "surface_rule");
             SurfaceRuleDataAdder surfaceRuleDataAdder = SurfaceRuleDataAdder.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
+            surfaceRuleDataAdder.id().ifPresent((s) -> NoManCraft.LOG.error("Surface rule {}", s));
             SURFACE_RULE_DATA_ADDERS.add(surfaceRuleDataAdder.source());
         });
 

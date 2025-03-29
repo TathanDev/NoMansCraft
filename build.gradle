@@ -87,7 +87,7 @@ subprojects {
 
 
         modImplementation("dev.galacticraft:dynamicdimensions-$modLoader:0.8.0+254")
-        modImplementation "fr.tathan.sky-aesthetics:sky-aesthetics-$modLoader-1.21:1.4.3"
+        modImplementation "fr.tathan.sky-aesthetics:sky-aesthetics-$modLoader-1.21:$sky_version"
 
         if(modLoader != "neoforge") {
             modApi "com.terraformersmc:modmenu:11.0.3"

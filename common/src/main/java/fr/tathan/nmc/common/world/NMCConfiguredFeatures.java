@@ -55,7 +55,7 @@ public class NMCConfiguredFeatures {
                         0.5F)), placedFeatures.getOrThrow(NMCPlacedFeatures.NO_LEAVES_OAK_CHECKED_KEY)));
 
         register(context, ICE_BLOB, FeatureRegistry.CUSTOM_SPIRE_COLUMN.get(), new CustomSpireColumnConfig(
-                UniformInt.of(2, 4),
+                ConstantInt.of(1),
                 UniformInt.of(3, 6),
                 Blocks.BLUE_ICE.defaultBlockState()
         ));

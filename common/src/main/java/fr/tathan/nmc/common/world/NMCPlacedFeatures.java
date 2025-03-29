@@ -3,6 +3,8 @@ package fr.tathan.nmc.common.world;
 import fr.tathan.nmc.NoManCraft;
 import fr.tathan.nmc.common.registry.BlocksRegistry;
 import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.data.worldgen.placement.MiscOverworldPlacements;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -34,8 +36,7 @@ public class NMCPlacedFeatures {
                 VegetationPlacements.treePlacement(PlacementUtils.countExtra(3, 0.1f, 2)));
 
         register(context, ICE_BLOB, configuredFeatures.getOrThrow(NMCConfiguredFeatures.ICE_BLOB),
-                VegetationPlacements.treePlacement(PlacementUtils.countExtra(3, 0.1f, 2)));
-
+                CountPlacement.of(UniformInt.of(1, 3)), InSquarePlacement.spread(), PlacementUtils.HEIGHTMAP, BiomeFilter.biome());
     }
 
 
