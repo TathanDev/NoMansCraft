@@ -162,7 +162,7 @@ public class NMConfig implements ConfigData {
 
     @ConfigEntry.Gui.Excluded
     @ConfigEntry.Category("planets")
-    @Comment("This is a list of default blocks that are possible for the planet. This list is weighted. The higher the weight, the more likely the block will be chosen.")
+    @Comment("This is a list of default blocks that are possible for the planet. This list is weighted. The higher the weight, the more likely the block will be chosen. Order : Temperate, Cold, Very Cold, Hot, Very Hot")
     public Map<ResourceLocation, Integer>[] possibleDefaultPlanetBlock = new Map[]{
             Map.of(
                     Blocks.STONE.arch$registryName(), 20
