@@ -2,6 +2,8 @@ plugins {
     id 'dev.architectury.loom' version '1.9-SNAPSHOT' apply false
     id 'architectury-plugin' version '3.4-SNAPSHOT'
     id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+    id "me.modmuss50.mod-publish-plugin" version "0.8.4"
+
 }
 
 architectury {
@@ -17,6 +19,7 @@ subprojects {
     apply plugin: 'dev.architectury.loom'
     apply plugin: 'architectury-plugin'
     apply plugin: 'maven-publish'
+    apply plugin: 'me.modmuss50.mod-publish-plugin'
 
     base {
         // Set up a suffixed format for the mod jar names, e.g. `example-fabric`.
@@ -92,6 +95,8 @@ subprojects {
 
         if(modLoader == "neoforge") {
             modImplementation ("net.commoble.infiniverse:infiniverse-1.21:2.0.1.0")
+            include("net.commoble.infiniverse:infiniverse-1.21:2.0.1.0")
+
         }
 
         if(modLoader == "fabric") {
@@ -111,6 +116,44 @@ subprojects {
         }
 
 
+    }
+
+    if (!isCommon) {
+        publishMods {
+            file = file(tasks.remapJar.archivePath)
+            changelog = file("../changelog.md").getText('UTF-8')
+            type = ALPHA
+            modLoaders.add(modLoader)
+            displayName = "[${modLoader.capitalize()} ${minecraft_version}] No Man's Craft ${mod_version}"
+
+            curseforge {
+                projectId = "1225753"
+                projectSlug = "no-mans-craft" // Required for discord webhook
+                accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
+                minecraftVersions.add("${minecraft_version}")
+                minecraftVersions.add("${supported_minecraft_version}")
+                javaVersions.add(JavaVersion.VERSION_21)
+                requires("stellaris")
+
+                if(modLoader == "neoforge") {
+                    embeds("infiniverse")
+                }
+            }
+
+            modrinth {
+                projectId = "oVM2EBnH"
+                accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+                minecraftVersions.add("${minecraft_version}")
+                minecraftVersions.add("${supported_minecraft_version}")
+                requires("stellaris")
+                if(modLoader == "neoforge") {
+                    embeds("infiniverse")
+                } else {
+                    requires("dimlib")
+                }
+
+            }
+        }
     }
 
     java {
