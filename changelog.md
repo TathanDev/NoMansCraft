@@ -1,4 +1,4 @@
-# No Man's Craft 0.0.2
+# No Man's Craft 0.0.3
 
 ## Changes
-- Include Infiniverse
+- fix fabric.mod.json

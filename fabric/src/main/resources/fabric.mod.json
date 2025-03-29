@@ -31,7 +31,7 @@
     "fabric-api": "*",
     "stellaris": ">=1.3.5",
     "cloth-config": ">=15.0.140",
-    "dimlib": ">=v1.1.0-mc1.21.1"
+    "dimlib": ">=1.1.0-mc1.21.1"
 
   },
   "suggests": {
