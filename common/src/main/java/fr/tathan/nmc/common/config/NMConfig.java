@@ -5,14 +5,22 @@ import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.WeightedListInt;
 import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Config(name = NoManCraft.MODID)
 public class NMConfig implements ConfigData {
@@ -152,6 +160,52 @@ public class NMConfig implements ConfigData {
             {0xf36363, 2}
     };
 
+    @ConfigEntry.Gui.Excluded
+    @ConfigEntry.Category("planets")
+    @Comment("This is a list of default blocks that are possible for the planet. This list is weighted. The higher the weight, the more likely the block will be chosen.")
+    public Map<ResourceLocation, Integer>[] possibleDefaultPlanetBlock = new Map[]{
+            Map.of(
+                    Blocks.STONE.arch$registryName(), 20
+            ),
+            Map.of(
+                    Blocks.ICE.arch$registryName(), 20,
+                    Blocks.STONE.arch$registryName(), 5
+
+            ),
+            Map.of(
+                    Blocks.ICE.arch$registryName(), 20,
+                    Blocks.PACKED_ICE.arch$registryName(), 5,
+                    Blocks.BLUE_ICE.arch$registryName(), 5
+
+            ),
+            Map.of(
+                    Blocks.STONE.arch$registryName(), 10,
+                    Blocks.BLACKSTONE.arch$registryName(), 10
+
+            ),
+            Map.of(
+                    Blocks.BLACKSTONE.arch$registryName(), 10,
+                    Blocks.STONE.arch$registryName(), 5,
+                    Blocks.NETHERRACK.arch$registryName(), 5
+
+            )
+    };
+
+    public static BlockState getRandomDefaultBlockLevel(Map<ResourceLocation, Integer> entries, RegistryAccess access) {
+        SimpleWeightedRandomList.Builder<BlockState> builder = SimpleWeightedRandomList.<BlockState>builder();
+
+        entries.forEach((location, weight) -> {;
+            Block block = access.registry(Registries.BLOCK).get().get(location);
+            if(block != null) {
+                builder.add(block.defaultBlockState(), weight);
+
+            }
+        });
+
+        return builder.build().getRandomValue(RandomSource.create()).get();
+    }
+
+
     public static WeightedListInt getPossibleBiomeColors() {
         int[][] colors = NoManCraft.getConfig().possibleBiomesColors;
         SimpleWeightedRandomList.Builder<IntProvider> builder = SimpleWeightedRandomList.<IntProvider>builder();
@@ -176,5 +230,6 @@ public class NMConfig implements ConfigData {
 
         }
     }
+
 
 }

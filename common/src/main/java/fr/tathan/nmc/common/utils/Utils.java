@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import dev.architectury.networking.NetworkManager;
 import fr.tathan.nmc.NoManCraft;
+import fr.tathan.nmc.common.config.NMConfig;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
 import fr.tathan.nmc.common.events.custom.PlanetsCreationLifecycle;
@@ -246,14 +247,11 @@ public class Utils {
 
 
     public static NoiseGeneratorSettings generatorSettings(RegistryAccess registryAccess, PlanetCreator planetInfo) {
-        return new NoiseGeneratorSettings(createNoiseSettings(), getDefaultBlock(planetInfo), getDefaultLiquid(planetInfo), NoiseRouterData.overworld(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE), Math.random() > (double) NoManCraft.getConfig().largeWorldChance / 100, Math.random() > (double) NoManCraft.getConfig().amplifiedWorldChance / 100), SurfaceRuleData.overworld(), (new OverworldBiomeBuilder()).spawnTarget(), getSeaLevel(), false, true, true, false);
+        return new NoiseGeneratorSettings(createNoiseSettings(), getDefaultBlock(planetInfo, registryAccess), getDefaultLiquid(planetInfo), NoiseRouterData.overworld(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE), Math.random() > (double) NoManCraft.getConfig().largeWorldChance / 100, Math.random() > (double) NoManCraft.getConfig().amplifiedWorldChance / 100), SurfaceRuleData.overworld(), (new OverworldBiomeBuilder()).spawnTarget(), getSeaLevel(), false, true, true, false);
     }
 
-    public static BlockState getDefaultBlock(PlanetCreator creator) {
-        if( creator.temperature == PlanetTemperature.VERY_HOT) {
-            return Blocks.BLACKSTONE.defaultBlockState();
-        }
-        return creator.temperature == PlanetTemperature.VERY_COLD ? Blocks.PACKED_ICE.defaultBlockState() : Blocks.STONE.defaultBlockState();
+    public static BlockState getDefaultBlock(PlanetCreator creator, RegistryAccess access) {
+        return getDefaultBlockState(creator.temperature, access);
     }
 
     public static BlockState getDefaultLiquid(PlanetCreator creator) {
@@ -320,4 +318,14 @@ public class Utils {
 
     }
 
+    public static BlockState getDefaultBlockState(PlanetTemperature temperature, RegistryAccess access) {
+        return switch (temperature) {
+            case VERY_COLD -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock[2], access);
+            case COLD -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock[1], access);
+            case TEMPERATE -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock[0], access);
+            case HOT -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock[3], access);
+            case VERY_HOT -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock[4], access);
+        };
+    }
 }
+
