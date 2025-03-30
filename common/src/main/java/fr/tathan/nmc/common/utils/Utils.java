@@ -189,15 +189,10 @@ public class Utils {
 
     public static ArrayList<ResourceKey<Biome>> getTemperateBiomes(int biomeCount) {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
-        while (biomes.size() < biomeCount - 2) {
+        while (biomes.size() < biomeCount) {
             int random = new Random().nextInt(getTemperateBiomesList().length);
             biomes.add(ResourceKey.create(Registries.BIOME, getTemperateBiomesList()[random]));
         }
-
-        int random = new Random().nextInt(getColdBiomesList().length);
-        biomes.add(ResourceKey.create(Registries.BIOME, getColdBiomesList()[random]));
-        biomes.add(ResourceKey.create(Registries.BIOME, getHotBiomesList()[random]));
-
         return biomes;
     }
 
@@ -320,11 +315,11 @@ public class Utils {
 
     public static BlockState getDefaultBlockState(PlanetTemperature temperature, RegistryAccess access) {
         return switch (temperature) {
-            case VERY_COLD -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock[2], access);
-            case COLD -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock[1], access);
-            case TEMPERATE -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock[0], access);
-            case HOT -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock[3], access);
-            case VERY_HOT -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock[4], access);
+            case VERY_COLD -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock.veryColdPlanetBlocks, access);
+            case COLD -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock.coldPlanetBlocks, access);
+            case TEMPERATE -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock.temperarePlanetBlocks, access);
+            case HOT -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock.hotPlanetBlocks, access);
+            case VERY_HOT -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock.veryHotPlanetBlocks, access);
         };
     }
 }

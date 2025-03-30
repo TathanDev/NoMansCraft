@@ -25,13 +25,19 @@ import java.util.Map;
 @Config(name = NoManCraft.MODID)
 public class NMConfig implements ConfigData {
 
-    @ConfigEntry.Category("planets")
-    public int minPlanets = 1;
+    @ConfigEntry.Category("systems")
+    public int minSystems = 5;
 
-    @ConfigEntry.Category("planets")
-    public int maxPlanets = 6;
+    @ConfigEntry.Category("systems")
+    public int maxSystems = 10;
 
-    @ConfigEntry.Category("planets")
+    @ConfigEntry.Category("system")
+    public int minPlanets = 2;
+
+    @ConfigEntry.Category("system")
+    public int maxPlanets = 8;
+
+    @ConfigEntry.Category("system")
     public int planetDistanceFromEarth = 900000;
 
     @ConfigEntry.Category("planets")
@@ -64,13 +70,6 @@ public class NMConfig implements ConfigData {
 
     @ConfigEntry.Category("planets")
     public int maxBiomes = 12;
-
-
-    @ConfigEntry.Category("systems")
-    public int minSystems = 3;
-
-    @ConfigEntry.Category("systems")
-    public int maxSystems = 6;
 
     @ConfigEntry.Gui.Excluded
     @ConfigEntry.Category("planets")
@@ -162,40 +161,43 @@ public class NMConfig implements ConfigData {
 
     @ConfigEntry.Gui.Excluded
     @ConfigEntry.Category("planets")
-    @Comment("This is a list of default blocks that are possible for the planet. This list is weighted. The higher the weight, the more likely the block will be chosen. Order : Temperate, Cold, Very Cold, Hot, Very Hot")
-    public Map<ResourceLocation, Integer>[] possibleDefaultPlanetBlock = new Map[]{
-            Map.of(
-                    Blocks.STONE.arch$registryName(), 20
-            ),
-            Map.of(
-                    Blocks.ICE.arch$registryName(), 20,
-                    Blocks.STONE.arch$registryName(), 5
+    @Comment("This is a list of default blocks that are possible for the planet. This list is weighted. The higher the weight, the more likely the block will be chosen. Order : Temperate, Hot, Very Hot, Cold, Very Cold.")
+    public DefaultPlanetsBlock possibleDefaultPlanetBlock = new DefaultPlanetsBlock();
 
-            ),
-            Map.of(
-                    Blocks.ICE.arch$registryName(), 20,
-                    Blocks.PACKED_ICE.arch$registryName(), 5,
-                    Blocks.BLUE_ICE.arch$registryName(), 5
+    public static class DefaultPlanetsBlock {
+        public HashMap<String, Integer> temperarePlanetBlocks = new HashMap<String, Integer>() {{
+            put(Blocks.STONE.arch$registryName().toString(), 20);
+        }};
+        public HashMap<String, Integer> hotPlanetBlocks = new HashMap<String, Integer>() {{
+            put(Blocks.STONE.arch$registryName().toString(), 10);
+            put(Blocks.BLACKSTONE.arch$registryName().toString(), 10);
+        }};
+        public HashMap<String, Integer> veryHotPlanetBlocks = new HashMap<String, Integer>() {{
+            put(Blocks.BLACKSTONE.arch$registryName().toString(), 10);
+            put(Blocks.STONE.arch$registryName().toString(), 5);
+            put(Blocks.NETHERRACK.arch$registryName().toString(), 5);
+        }};
 
-            ),
-            Map.of(
-                    Blocks.STONE.arch$registryName(), 10,
-                    Blocks.BLACKSTONE.arch$registryName(), 10
+        public HashMap<String, Integer> coldPlanetBlocks = new HashMap<String, Integer>() {{
+            put(Blocks.ICE.arch$registryName().toString(), 20);
+            put(Blocks.STONE.arch$registryName().toString(), 5);
 
-            ),
-            Map.of(
-                    Blocks.BLACKSTONE.arch$registryName(), 10,
-                    Blocks.STONE.arch$registryName(), 5,
-                    Blocks.NETHERRACK.arch$registryName(), 5
+        }};
 
-            )
-    };
+        public HashMap<String, Integer> veryColdPlanetBlocks = new HashMap<String, Integer>() {{
+            put(Blocks.ICE.arch$registryName().toString(), 20);
+            put(Blocks.PACKED_ICE.arch$registryName().toString(), 5);
+            put(Blocks.BLUE_ICE.arch$registryName().toString(), 5);
+        }};
 
-    public static BlockState getRandomDefaultBlockLevel(Map<ResourceLocation, Integer> entries, RegistryAccess access) {
-        SimpleWeightedRandomList.Builder<BlockState> builder = SimpleWeightedRandomList.<BlockState>builder();
+    }
 
-        entries.forEach((location, weight) -> {;
-            Block block = access.registry(Registries.BLOCK).get().get(location);
+
+    public static BlockState getRandomDefaultBlockLevel(HashMap<String, Integer> entries, RegistryAccess access) {
+        SimpleWeightedRandomList.Builder<BlockState> builder = SimpleWeightedRandomList.builder();
+
+        entries.forEach((str, weight) -> {;
+            Block block = access.registry(Registries.BLOCK).get().get(ResourceLocation.parse(str));
             if(block != null) {
                 builder.add(block.defaultBlockState(), weight);
 

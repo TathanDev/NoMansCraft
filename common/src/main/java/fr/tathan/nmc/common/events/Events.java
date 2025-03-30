@@ -1,17 +1,19 @@
 package fr.tathan.nmc.common.events;
 
+import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.events.custom.PlanetSelectionServerEvents;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.networking.NetworkManager;
-import fr.tathan.nmc.common.creators.MoonCreator;
+import dev.architectury.platform.Platform;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
 import fr.tathan.nmc.common.data.SystemsData;
 import fr.tathan.nmc.common.networks.packets.SyncSystemPacket;
 import fr.tathan.nmc.common.utils.Utils;
+import net.fabricmc.api.EnvType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelStorageSource;
 
@@ -44,6 +46,7 @@ public class Events {
 
         LifecycleEvent.SERVER_STARTED.register((server) -> {
             LevelStorageSource.LevelStorageAccess levelStorageSource = server.storageSource;
+
             SystemsData.loadOrGenerateDefaults(levelStorageSource.getLevelDirectory().path());
         });
 
@@ -52,6 +55,7 @@ public class Events {
             LevelStorageSource.LevelStorageAccess levelStorageSource = player.server.storageSource;
 
             SystemsData.loadOrGenerateDefaults(levelStorageSource.getLevelDirectory().path());
+            NetworkManager.sendToPlayer(player, new SyncSystemPacket(SYSTEMS));
 
         });
     }
