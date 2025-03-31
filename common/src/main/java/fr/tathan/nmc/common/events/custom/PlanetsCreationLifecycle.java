@@ -17,7 +17,6 @@ public interface PlanetsCreationLifecycle {
     Event<PostBiomeSelection> POST_BIOMES_SELECTION = EventFactory.createLoop();
     Event<PrePlanetLevelCreation> PRE_PLANET_LEVEL_CREATION = EventFactory.createEventResult();
 
-
     interface PrePlanetLevelCreation {
         /**
          * Invoked when a Planet is registered.
@@ -34,8 +33,8 @@ public interface PlanetsCreationLifecycle {
         /**
          * Invoked when a Planet is registered.
          *
-         * @param planet The planet registered.
-         * @param biomes The list of biomes of the planet.
+             * @param planet The planet registered.
+             * @param biomes The list of biomes of the planet.
          */
         void postBiomeSelection(PlanetCreator planet, ArrayList<ResourceKey<Biome>> biomes);
     }

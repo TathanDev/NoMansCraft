@@ -20,7 +20,7 @@ public class SkyUtils {
     public static ResourceLocation BASIC_MOON = ResourceLocation.withDefaultNamespace("textures/environment/moon_phases.png");
 
     public static SkyProperties createSky(PlanetCreator creator) {
-        SkyProperties properties = new SkyProperties(
+        return new SkyProperties(
                 ResourceKey.create(Registries.DIMENSION, creator.planet.dimension()),
                 Optional.of( creator.planet.dimension()),
                 Optional.of(getCloudSettings(creator)),
@@ -36,7 +36,6 @@ public class SkyUtils {
                 Optional.empty(),
                 Optional.empty()
         );
-        return properties;
     }
 
     public static CloudSettings getCloudSettings(PlanetCreator creator) {
@@ -47,7 +46,7 @@ public class SkyUtils {
 
     public static FogSettings getFogSettings(PlanetCreator creator) {
         float before = (float) (Math.random() * 100) +  (float) Math.random() * 50;
-        float after = before + 100;
+        float after = before + 30;
 
         return new FogSettings(true, Optional.empty(), Optional.of(new Vector2f(before, after)));
     }
@@ -66,7 +65,7 @@ public class SkyUtils {
         return new Star(
             creator.temperature == PlanetTemperature.TEMPERATE,
             Math.random() >= 0.2,
-            (int) (Math.random() * 10000 + Math.random() * 10000),
+            (int) (Math.random() * 15000 + Math.random() * 10000),
             Math.random() > 0.8 || creator.temperature == PlanetTemperature.VERY_COLD,
             0.05f,
             color,
