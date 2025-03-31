@@ -1,12 +1,13 @@
 package fr.tathan.nmc.common.utils;
 
 import com.mojang.datafixers.util.Pair;
-import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import dev.architectury.networking.NetworkManager;
 import fr.tathan.nmc.NoManCraft;
+import fr.tathan.nmc.common.config.NMConfig;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
+import fr.tathan.nmc.common.events.custom.PlanetsCreationLifecycle;
 import fr.tathan.nmc.platform.DimensionUtil;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
@@ -110,6 +111,8 @@ public class Utils {
                 holder = dimensionTypes.getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD);
             }
 
+            PlanetsCreationLifecycle.PRE_PLANET_LEVEL_CREATION.invoker().prePlanetLevelCreation(planetInfo, generator, holder, context);
+
             ServerLevel level = DimensionUtil.createPlanet(context.getPlayer().getServer(), planet.dimension(), generator, holder);
             
         });
@@ -126,6 +129,8 @@ public class Utils {
 
         HolderGetter<Biome> biomes = registryAccess.lookupOrThrow(Registries.BIOME);
         ArrayList<ResourceKey<Biome>> planetBiomes = getBiomes(planetInfo);
+
+        PlanetsCreationLifecycle.POST_BIOMES_SELECTION.invoker().postBiomeSelection(planetInfo, planetBiomes);
 
         return new Climate.ParameterList<>(List.of(
                 // Row 1
@@ -184,15 +189,10 @@ public class Utils {
 
     public static ArrayList<ResourceKey<Biome>> getTemperateBiomes(int biomeCount) {
         ArrayList<ResourceKey<Biome>> biomes = new ArrayList<>();
-        while (biomes.size() < biomeCount - 2) {
+        while (biomes.size() < biomeCount) {
             int random = new Random().nextInt(getTemperateBiomesList().length);
             biomes.add(ResourceKey.create(Registries.BIOME, getTemperateBiomesList()[random]));
         }
-
-        int random = new Random().nextInt(getColdBiomesList().length);
-        biomes.add(ResourceKey.create(Registries.BIOME, getColdBiomesList()[random]));
-        biomes.add(ResourceKey.create(Registries.BIOME, getHotBiomesList()[random]));
-
         return biomes;
     }
 
@@ -242,14 +242,11 @@ public class Utils {
 
 
     public static NoiseGeneratorSettings generatorSettings(RegistryAccess registryAccess, PlanetCreator planetInfo) {
-        return new NoiseGeneratorSettings(createNoiseSettings(), getDefaultBlock(planetInfo), getDefaultLiquid(planetInfo), NoiseRouterData.overworld(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE), Math.random() > (double) NoManCraft.getConfig().largeWorldChance / 100, Math.random() > (double) NoManCraft.getConfig().amplifiedWorldChance / 100), SurfaceRuleData.overworld(), (new OverworldBiomeBuilder()).spawnTarget(), getSeaLevel(), false, true, true, false);
+        return new NoiseGeneratorSettings(createNoiseSettings(), getDefaultBlock(planetInfo, registryAccess), getDefaultLiquid(planetInfo), NoiseRouterData.overworld(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE), Math.random() > (double) NoManCraft.getConfig().largeWorldChance / 100, Math.random() > (double) NoManCraft.getConfig().amplifiedWorldChance / 100), SurfaceRuleData.overworld(), (new OverworldBiomeBuilder()).spawnTarget(), getSeaLevel(), false, true, true, false);
     }
 
-    public static BlockState getDefaultBlock(PlanetCreator creator) {
-        if( creator.temperature == PlanetTemperature.VERY_HOT) {
-            return Blocks.BLACKSTONE.defaultBlockState();
-        }
-        return creator.temperature == PlanetTemperature.VERY_COLD ? Blocks.PACKED_ICE.defaultBlockState() : Blocks.STONE.defaultBlockState();
+    public static BlockState getDefaultBlock(PlanetCreator creator, RegistryAccess access) {
+        return getDefaultBlockState(creator.temperature, access);
     }
 
     public static BlockState getDefaultLiquid(PlanetCreator creator) {
@@ -316,4 +313,14 @@ public class Utils {
 
     }
 
+    public static BlockState getDefaultBlockState(PlanetTemperature temperature, RegistryAccess access) {
+        return switch (temperature) {
+            case VERY_COLD -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock.veryColdPlanetBlocks, access);
+            case COLD -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock.coldPlanetBlocks, access);
+            case TEMPERATE -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock.temperarePlanetBlocks, access);
+            case HOT -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock.hotPlanetBlocks, access);
+            case VERY_HOT -> NMConfig.getRandomDefaultBlockLevel(NoManCraft.getConfig().possibleDefaultPlanetBlock.veryHotPlanetBlocks, access);
+        };
+    }
 }
+

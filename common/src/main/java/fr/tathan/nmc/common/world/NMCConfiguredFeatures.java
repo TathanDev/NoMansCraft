@@ -2,12 +2,15 @@ package fr.tathan.nmc.common.world;
 
 import dev.architectury.registry.registries.DeferredRegister;
 import fr.tathan.nmc.NoManCraft;
+import fr.tathan.nmc.common.registry.FeatureRegistry;
+import fr.tathan.nmc.common.world.features.CustomSpireColumnConfig;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.ConstantInt;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -32,6 +35,8 @@ public class NMCConfiguredFeatures {
     public static final ResourceKey<ConfiguredFeature<?, ?>> NO_LEAVES_OAK = registerKey("no_leaves_oak");
     public static final ResourceKey<ConfiguredFeature<?, ?>> NO_LEAVES_OAK_SPAWN = registerKey("no_leaves_oak_spawn");
 
+    public static final ResourceKey<ConfiguredFeature<?, ?>> ICE_BLOB = registerKey("ice_blob");
+
 
     public static void bootstrap(BootstrapContext<ConfiguredFeature<?, ?>> context) {
         HolderGetter<PlacedFeature> placedFeatures = context.lookup(Registries.PLACED_FEATURE);
@@ -48,6 +53,13 @@ public class NMCConfiguredFeatures {
                 new RandomFeatureConfiguration(List.of(new WeightedPlacedFeature(
                         placedFeatures.getOrThrow(NMCPlacedFeatures.NO_LEAVES_OAK_CHECKED_KEY),
                         0.5F)), placedFeatures.getOrThrow(NMCPlacedFeatures.NO_LEAVES_OAK_CHECKED_KEY)));
+
+        register(context, ICE_BLOB, FeatureRegistry.CUSTOM_SPIRE_COLUMN.get(), new CustomSpireColumnConfig(
+                ConstantInt.of(1),
+                UniformInt.of(3, 6),
+                Blocks.BLUE_ICE.defaultBlockState()
+        ));
+
 
     }
 

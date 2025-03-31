@@ -5,25 +5,39 @@ import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.WeightedListInt;
 import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Config(name = NoManCraft.MODID)
 public class NMConfig implements ConfigData {
 
-    @ConfigEntry.Category("planets")
-    public int minPlanets = 1;
+    @ConfigEntry.Category("systems")
+    public int minSystems = 5;
 
-    @ConfigEntry.Category("planets")
-    public int maxPlanets = 6;
+    @ConfigEntry.Category("systems")
+    public int maxSystems = 10;
 
-    @ConfigEntry.Category("planets")
+    @ConfigEntry.Category("system")
+    public int minPlanets = 2;
+
+    @ConfigEntry.Category("system")
+    public int maxPlanets = 8;
+
+    @ConfigEntry.Category("system")
     public int planetDistanceFromEarth = 900000;
 
     @ConfigEntry.Category("planets")
@@ -57,13 +71,6 @@ public class NMConfig implements ConfigData {
     @ConfigEntry.Category("planets")
     public int maxBiomes = 12;
 
-
-    @ConfigEntry.Category("systems")
-    public int minSystems = 3;
-
-    @ConfigEntry.Category("systems")
-    public int maxSystems = 6;
-
     @ConfigEntry.Gui.Excluded
     @ConfigEntry.Category("planets")
     public List<String> veryColdBiomes =  List.of(
@@ -72,6 +79,8 @@ public class NMConfig implements ConfigData {
             Biomes.FROZEN_RIVER.location().toString(),
             Biomes.DEEP_COLD_OCEAN.location().toString(),
             ResourceLocation.fromNamespaceAndPath("stellaris", "mars_ice_spikes").toString(),
+            ResourceLocation.fromNamespaceAndPath("nmc", "iced_desert").toString(),
+
             Biomes.ICE_SPIKES.location().toString()
     );
 
@@ -150,6 +159,55 @@ public class NMConfig implements ConfigData {
             {0xf36363, 2}
     };
 
+    @ConfigEntry.Gui.Excluded
+    @ConfigEntry.Category("planets")
+    @Comment("This is a list of default blocks that are possible for the planet. This list is weighted. The higher the weight, the more likely the block will be chosen. Order : Temperate, Hot, Very Hot, Cold, Very Cold.")
+    public DefaultPlanetsBlock possibleDefaultPlanetBlock = new DefaultPlanetsBlock();
+
+    public static class DefaultPlanetsBlock {
+        public HashMap<String, Integer> temperarePlanetBlocks = new HashMap<String, Integer>() {{
+            put(Blocks.STONE.arch$registryName().toString(), 20);
+        }};
+        public HashMap<String, Integer> hotPlanetBlocks = new HashMap<String, Integer>() {{
+            put(Blocks.STONE.arch$registryName().toString(), 10);
+            put(Blocks.BLACKSTONE.arch$registryName().toString(), 10);
+        }};
+        public HashMap<String, Integer> veryHotPlanetBlocks = new HashMap<String, Integer>() {{
+            put(Blocks.BLACKSTONE.arch$registryName().toString(), 10);
+            put(Blocks.STONE.arch$registryName().toString(), 5);
+            put(Blocks.NETHERRACK.arch$registryName().toString(), 5);
+        }};
+
+        public HashMap<String, Integer> coldPlanetBlocks = new HashMap<String, Integer>() {{
+            put(Blocks.ICE.arch$registryName().toString(), 20);
+            put(Blocks.STONE.arch$registryName().toString(), 5);
+
+        }};
+
+        public HashMap<String, Integer> veryColdPlanetBlocks = new HashMap<String, Integer>() {{
+            put(Blocks.ICE.arch$registryName().toString(), 20);
+            put(Blocks.PACKED_ICE.arch$registryName().toString(), 5);
+            put(Blocks.BLUE_ICE.arch$registryName().toString(), 5);
+        }};
+
+    }
+
+
+    public static BlockState getRandomDefaultBlockLevel(HashMap<String, Integer> entries, RegistryAccess access) {
+        SimpleWeightedRandomList.Builder<BlockState> builder = SimpleWeightedRandomList.builder();
+
+        entries.forEach((str, weight) -> {;
+            Block block = access.registry(Registries.BLOCK).get().get(ResourceLocation.parse(str));
+            if(block != null) {
+                builder.add(block.defaultBlockState(), weight);
+
+            }
+        });
+
+        return builder.build().getRandomValue(RandomSource.create()).get();
+    }
+
+
     public static WeightedListInt getPossibleBiomeColors() {
         int[][] colors = NoManCraft.getConfig().possibleBiomesColors;
         SimpleWeightedRandomList.Builder<IntProvider> builder = SimpleWeightedRandomList.<IntProvider>builder();
@@ -174,5 +232,6 @@ public class NMConfig implements ConfigData {
 
         }
     }
+
 
 }

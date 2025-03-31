@@ -12,6 +12,8 @@ import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
 import fr.tathan.nmc.common.events.Events;
+import fr.tathan.nmc.common.events.custom.PlanetsCreationLifecycle;
+import fr.tathan.nmc.common.events.custom.SystemsCreationLifecycle;
 import fr.tathan.nmc.common.utils.Utils;
 import net.minecraft.util.GsonHelper;
 
@@ -102,13 +104,13 @@ public class SystemsData {
 
         Random random = new Random();
         int systems = random.nextInt(NoManCraft.getConfig().minSystems, NoManCraft.getConfig().maxSystems);
-        Stellaris.LOG.error("Generating {} systems", systems);
         for (int i = 0; i < systems; i++) {
             SystemCreator creator = new SystemCreator();
             creator.changeStarPos(container.systems);
             container.systems.add(creator);
         }
         container.planets = getPlanets(container);
+        SystemsCreationLifecycle.POST_SYSTEMS_CREATION.invoker().postSystemsCreation(container, systems);
         return container;
     }
 

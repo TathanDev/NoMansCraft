@@ -79,10 +79,14 @@ public class NetworkHelper {
         public static void skyProperties(RegistryFriendlyByteBuf byteBuf, SkyProperties properties) {
             byteBuf.writeResourceKey(properties.world());
             byteBuf.writeOptional(properties.id(), FriendlyByteBuf::writeResourceLocation);
-            cloudSetttings(byteBuf, properties.cloudSettings());
+
+            byteBuf.writeOptional(properties.cloudSettings(), (s, t) -> cloudSetttings(byteBuf, t));
+
             byteBuf.writeOptional(properties.fogSettings(), (b, f) -> fogSettings(byteBuf, f));
             byteBuf.writeBoolean(properties.rain());
-            customVanillaObject(byteBuf, properties.customVanillaObject());
+
+            byteBuf.writeOptional(properties.customVanillaObject(), (s, t) -> customVanillaObject(byteBuf, t));
+
             star(byteBuf, properties.stars());
             byteBuf.writeOptional(properties.sunriseColor(), (b, c) -> byteBuf.writeVec3(c));
             byteBuf.writeOptional(properties.sunriseModifier(), (b, s) -> byteBuf.writeFloat(s));
@@ -98,7 +102,8 @@ public class NetworkHelper {
 
         public static void cloudSetttings(RegistryFriendlyByteBuf byteBuf, CloudSettings settings) {
             byteBuf.writeBoolean(settings.showCloud());
-            byteBuf.writeInt(settings.cloudHeight());
+
+            byteBuf.writeOptional(settings.cloudHeight(), (t, h) -> byteBuf.writeInt(h));
             byteBuf.writeOptional(settings.cloudColor(), (buf, color) -> customCloudColor(byteBuf, color));
         }
 
@@ -140,14 +145,20 @@ public class NetworkHelper {
 
         public static void customVanillaObject(RegistryFriendlyByteBuf byteBuf, CustomVanillaObject object) {
             byteBuf.writeBoolean(object.sun());
-            byteBuf.writeResourceLocation(object.sunTexture());
-            byteBuf.writeFloat(object.sunHeight());
-            byteBuf.writeFloat(object.sunSize());
+
+            byteBuf.writeOptional(object.sunTexture(), (b, r) -> byteBuf.writeResourceLocation(r));
+
+            byteBuf.writeOptional(object.sunHeight(), (b, r) -> byteBuf.writeFloat(r));
+            byteBuf.writeOptional(object.sunSize(), (b, r) -> byteBuf.writeFloat(r));
+
             byteBuf.writeBoolean(object.moon());
             byteBuf.writeBoolean(object.moonPhase());
-            byteBuf.writeResourceLocation(object.moonTexture());
-            byteBuf.writeFloat(object.moonHeight());
-            byteBuf.writeFloat(object.moonSize());
+
+            byteBuf.writeOptional(object.moonTexture(), (b, r) -> byteBuf.writeResourceLocation(r));
+
+            byteBuf.writeOptional(object.moonHeight(), (b, r) -> byteBuf.writeFloat(r));
+            byteBuf.writeOptional(object.moonSize(), (b, r) -> byteBuf.writeFloat(r));
+
         }
 
         public static void star(RegistryFriendlyByteBuf byteBuf, Star star) {
@@ -165,11 +176,12 @@ public class NetworkHelper {
                 byteBuf.writeVec3(c.color());
                 byteBuf.writeOptional(c.rotation(), ByteBuf::writeInt);
             });
+            byteBuf.writeOptional(star.starsTexture(), (b, c) -> byteBuf.writeResourceLocation(c));
         }
 
         public static void skyColor(RegistryFriendlyByteBuf byteBuf, SkyColor color) {
             byteBuf.writeBoolean(color.customColor());
-            vector4f(byteBuf, color.color());
+            byteBuf.writeOptional(color.color(), (b, c) -> vector4f(byteBuf, c));
         }
 
         public static void skyObject(RegistryFriendlyByteBuf buffer, SkyObject obj) {
@@ -248,7 +260,7 @@ public class NetworkHelper {
         public static CloudSettings cloudSettings(RegistryFriendlyByteBuf byteBuf) {
             return new CloudSettings(
                     byteBuf.readBoolean(),
-                    byteBuf.readInt(),
+                    byteBuf.readOptional(FriendlyByteBuf::readInt),
                     byteBuf.readOptional((s -> customCloudColor(byteBuf)))
             );
         }
@@ -274,17 +286,22 @@ public class NetworkHelper {
             return new Vector2f(buffer.readFloat(), buffer.readFloat());
         }
 
+        public static Vector4f vector4f(ByteBuf buffer) {
+            return new Vector4f(buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
+        }
+
+
         public static CustomVanillaObject customVanillaObject(RegistryFriendlyByteBuf byteBuf) {
             return new CustomVanillaObject(
                     byteBuf.readBoolean(),
-                    byteBuf.readResourceLocation(),
-                    byteBuf.readFloat(),
-                    byteBuf.readFloat(),
+                    byteBuf.readOptional(FriendlyByteBuf::readResourceLocation),
+                    byteBuf.readOptional(FriendlyByteBuf::readFloat),
+                    byteBuf.readOptional(FriendlyByteBuf::readFloat),
                     byteBuf.readBoolean(),
                     byteBuf.readBoolean(),
-                    byteBuf.readResourceLocation(),
-                    byteBuf.readFloat(),
-                    byteBuf.readFloat()
+                    byteBuf.readOptional(FriendlyByteBuf::readResourceLocation),
+                    byteBuf.readOptional(FriendlyByteBuf::readFloat),
+                    byteBuf.readOptional(FriendlyByteBuf::readFloat)
             );
         }
 
@@ -296,7 +313,8 @@ public class NetworkHelper {
                     byteBuf.readBoolean(),
                     byteBuf.readFloat(),
                     byteBuf.readVec3(),
-                    byteBuf.readOptional((b -> shootingStars(byteBuf)))
+                    byteBuf.readOptional((b -> shootingStars(byteBuf))),
+                    byteBuf.readOptional((FriendlyByteBuf::readResourceLocation))
             );
         }
 
@@ -312,7 +330,7 @@ public class NetworkHelper {
         }
 
         public static SkyColor skyColor(RegistryFriendlyByteBuf byteBuf) {
-            return new SkyColor(byteBuf.readBoolean(), new Vector4f(byteBuf.readFloat(), byteBuf.readFloat(), byteBuf.readFloat(), byteBuf.readFloat()));
+            return new SkyColor(byteBuf.readBoolean(), byteBuf.readOptional(FromNetwork::vector4f));
         }
 
         public static SkyObject skyObject(RegistryFriendlyByteBuf buffer) {
@@ -335,10 +353,10 @@ public class NetworkHelper {
             return new SkyProperties(
                     buffer.readResourceKey(Registries.DIMENSION),
                     buffer.readOptional(FriendlyByteBuf::readResourceLocation),
-                    cloudSettings(buffer),
+                    buffer.readOptional((s) ->  cloudSettings(buffer)),
                     buffer.readOptional((b -> fogSettings(buffer))),
                     buffer.readBoolean(),
-                    customVanillaObject(buffer),
+                    buffer.readOptional((s) ->  customVanillaObject(buffer)),
                     star(buffer),
                     //Sunrise Color
                     buffer.readOptional((b -> buffer.readVec3())),

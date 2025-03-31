@@ -6,32 +6,23 @@
       "minecraft:canyon"
     ]
   },
-  "downfall": 0.8,
+  "downfall": 0.5,
   "has_precipitation": true,
   "effects": {
     "fog_color": 12638463,
     "mood_sound": {
       "block_search_extent": 8,
-      "offset": 2,
+      "offset": 2.0,
       "sound": "minecraft:ambient.cave",
       "tick_delay": 6000
     },
-    "music": {
-      "max_delay": 24000,
-      "min_delay": 12000,
-      "replace_current_music": false,
-      "sound": "minecraft:music.overworld.old_growth_taiga"
-    },
-    "sky_color": 8168447,
+    "sky_color": 8364543,
     "water_color": 4159204,
     "water_fog_color": 329011
   },
   "features": [
     [],
-    [
-      "minecraft:lake_lava_underground",
-      "minecraft:lake_lava_surface"
-    ],
+    [],
     [
       "minecraft:amethyst_geode",
       "minecraft:forest_rock"
@@ -68,31 +59,20 @@
       "minecraft:disk_clay",
       "minecraft:disk_gravel"
     ],
-    [
-      "minecraft:lush_caves_ceiling_vegetation",
-      "minecraft:cave_vines"
-    ],
+    [],
     [
       "minecraft:spring_water",
       "minecraft:spring_lava"
     ],
     [
-      "minecraft:glow_lichen",
-      "minecraft:patch_large_fern",
-      "minecraft:trees_old_growth_pine_taiga",
-      "minecraft:flower_default",
-      "minecraft:patch_grass_taiga",
-      "minecraft:patch_dead_bush",
-      "minecraft:brown_mushroom_old_growth",
-      "minecraft:red_mushroom_old_growth",
-      "minecraft:brown_mushroom_normal",
-      "minecraft:red_mushroom_normal"
+      "minecraft:ice_spike",
+      "nmc:ice_blob"
     ],
     [
       "minecraft:freeze_top_layer"
     ]
   ],
-  "precipitation": "rain",
+  "precipitation": "snow",
   "category": "jungle",
   "spawn_costs": {},
   "spawners": {
@@ -199,5 +179,5 @@
     "water_ambient": [],
     "water_creature": []
   },
-  "temperature": 0.8
+  "temperature": 0.3
 }
