@@ -1,10 +1,9 @@
-# No Man's Craft 0.0.4
+# No Man's Craft 0.1.0
 
-## Features
-- Added Iced Desert
+This is the first beta ! I fixed a really annoying bug with the temperature showed in the planet gui was not the same as the real temperature. 
 
-## Changes
-- Added default block config
+## Fix
+- Fixed the temperature not being saved
 
-## Dev Features
-- Added events (https://github.com/TathanDev/NoMansCraft/wiki/Events)
+## Added
+- Added new biomes to the config
