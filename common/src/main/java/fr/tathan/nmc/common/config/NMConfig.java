@@ -158,10 +158,10 @@ public class NMConfig implements ConfigData {
     @Comment("This is a list of colors that are possible for the planet. 0 is the default color. This list is weighted. The higher the weight, the more likely the color will be chosen.")
     public int[][] possibleBiomesColors = new int[][]{
             {0, 20},
-            {0x41a4c1, 2},
-            {0xff80d9, 2},
-            {0xe5ae60, 2},
-            {0xf36363, 2}
+            {0x41a4c1, 4},
+            {0xff80d9, 4},
+            {0xe5ae60, 4},
+            {0xf36363, 4}
     };
 
     @ConfigEntry.Gui.Excluded
