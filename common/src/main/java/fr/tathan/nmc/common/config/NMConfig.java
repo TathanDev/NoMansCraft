@@ -80,6 +80,7 @@ public class NMConfig implements ConfigData {
             Biomes.DEEP_COLD_OCEAN.location().toString(),
             ResourceLocation.fromNamespaceAndPath("stellaris", "mars_ice_spikes").toString(),
             ResourceLocation.fromNamespaceAndPath("nmc", "iced_desert").toString(),
+            ResourceLocation.fromNamespaceAndPath("nmc", "big_taiga").toString(),
 
             Biomes.ICE_SPIKES.location().toString()
     );
@@ -95,6 +96,10 @@ public class NMConfig implements ConfigData {
             Biomes.DEEP_COLD_OCEAN.location().toString(),
             Biomes.OCEAN.location().toString(),
             Biomes.FROZEN_OCEAN.location().toString(),
+            Biomes.PLAINS.location().toString(),
+            Biomes.SNOWY_PLAINS.location().toString(),
+            Biomes.SNOWY_BEACH.location().toString(),
+
             ResourceLocation.fromNamespaceAndPath("nmc", "big_taiga").toString()
     );
 
