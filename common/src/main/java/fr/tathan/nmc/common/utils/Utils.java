@@ -1,6 +1,7 @@
 package fr.tathan.nmc.common.utils;
 
 import com.mojang.datafixers.util.Pair;
+import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import dev.architectury.networking.NetworkManager;
 import fr.tathan.nmc.NoManCraft;
@@ -93,6 +94,7 @@ public class Utils {
 
     public static void generateWorld(NetworkManager.PacketContext context, PlanetCreator planetInfo) {
         Planet planet = planetInfo.planet;
+        Stellaris.LOG.error("Planet when Generating Temp : {}", planetInfo.temperature);
 
         context.registryAccess().registry(Registries.NOISE_SETTINGS).ifPresent((registry) -> {
 

@@ -37,12 +37,14 @@ public class PlanetCreator {
                     MoonCreator.codec().listOf().fieldOf("moons").forGetter(s -> s.moons), // Recursive call
                     SkyProperties.CODEC.fieldOf("sky").forGetter(s -> s.sky),
                     Planet.StormParameters.CODEC.optionalFieldOf("stormParameters").forGetter(s -> s.stormParameters),
-                    Codec.INT.fieldOf("grassColor").forGetter(s -> s.grassColor)
-            ).apply(instance, (canHaveMoon, systemName, distanceFromStar, name, planet, planetInfo, moons, sky, storm, grassColor) -> {
+                    Codec.INT.fieldOf("grassColor").forGetter(s -> s.grassColor),
+                    Codec.INT.fieldOf("temperature").forGetter(s -> s.temperature.temperature())
+
+            ).apply(instance, (canHaveMoon, systemName, distanceFromStar, name, planet, planetInfo, moons, sky, storm, grassColor, temperature) -> {
                 // Need to find the SystemCreator based on the systemName during deserialization
                 // This requires access to the list of systems (e.g., Events.SYSTEMS)
                 // For now, we'll pass null and fix it later (see deserialization notes below)
-                return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, storm, grassColor);
+                return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, storm, grassColor, temperature);
             }))
     );
 
@@ -55,7 +57,7 @@ public class PlanetCreator {
     public final Planet planet;
     public SystemCreator system;
     public final String name;
-    public final PlanetTemperature temperature = PlanetTemperature.randomTemperature();
+    public final PlanetTemperature temperature;
     public final PlanetInfo planetInfo;
     public final int distanceFromStar;
     public final SkyProperties sky;
@@ -63,7 +65,7 @@ public class PlanetCreator {
     public final Optional<Planet.StormParameters> stormParameters;
     public final int grassColor;
 
-    public PlanetCreator(boolean canHaveMoon, SystemCreator system, int distanceFromStar, String name, Planet planet, PlanetInfo planetInfo, List<MoonCreator> moons, SkyProperties sky, String systemName, Optional<Planet.StormParameters> stormParameters, int grassColor) {
+    public PlanetCreator(boolean canHaveMoon, SystemCreator system, int distanceFromStar, String name, Planet planet, PlanetInfo planetInfo, List<MoonCreator> moons, SkyProperties sky, String systemName, Optional<Planet.StormParameters> stormParameters, int grassColor, int temperature) {
         this.canHaveMoon = canHaveMoon;
         this.system = system;
         this.distanceFromStar = distanceFromStar;
@@ -75,7 +77,7 @@ public class PlanetCreator {
         this.systemName = systemName;
         this.stormParameters = stormParameters;
         this.grassColor = grassColor;
-
+        this.temperature = PlanetTemperature.fromInt(temperature);
     }
 
     public static void toNetwork(PlanetCreator planet, final RegistryFriendlyByteBuf buffer) {
@@ -93,6 +95,7 @@ public class PlanetCreator {
         buffer.writeUtf(planet.systemName);
         buffer.writeOptional(planet.stormParameters, (friendlyByteBuf, storm) -> storm.toNetwork(buffer));
         buffer.writeInt(planet.grassColor);
+        buffer.writeInt(planet.temperature.temperature());
     }
 
     public static PlanetCreator fromNetwork(final RegistryFriendlyByteBuf buffer) {
@@ -109,7 +112,9 @@ public class PlanetCreator {
         var systemName = buffer.readUtf();
         var stormParameters = buffer.readOptional(Planet.StormParameters::readBuffer);
         var grassColor = buffer.readInt();
-        return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, stormParameters, grassColor);
+        var temperature = buffer.readInt();
+
+        return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, stormParameters, grassColor, temperature);
     }
 
     public PlanetCreator(SystemCreator system) {
@@ -124,6 +129,7 @@ public class PlanetCreator {
 
     public PlanetCreator(boolean canHaveMoon, SystemCreator system, int distanceFromStar) {
         this.canHaveMoon = canHaveMoon;
+        this.temperature = PlanetTemperature.randomTemperature();
         this.system = system;
         this.distanceFromStar = distanceFromStar;
         this.name = Utils.generatePlanetName();
@@ -134,7 +140,6 @@ public class PlanetCreator {
         this.sky = SkyUtils.createSky(this);
         this.systemName = system.name; // Store the system name
         this.grassColor = NMConfig.getPossibleBiomeColors().sample(RandomSource.create());
-
     }
 
     public ArrayList<MoonCreator> createMoons() {

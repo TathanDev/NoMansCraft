@@ -1,19 +1,16 @@
 package fr.tathan.nmc.common.events;
 
-import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.events.custom.PlanetSelectionServerEvents;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.networking.NetworkManager;
-import dev.architectury.platform.Platform;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemsContainer;
 import fr.tathan.nmc.common.data.SystemsData;
 import fr.tathan.nmc.common.networks.packets.SyncSystemPacket;
 import fr.tathan.nmc.common.utils.Utils;
-import net.fabricmc.api.EnvType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelStorageSource;
 
@@ -24,22 +21,13 @@ public class Events {
     public static void registerEvents() {
 
         PlanetSelectionServerEvents.LAUNCH_BUTTON.register((player, planet, rocket, context) -> {
-            if(player.level().isClientSide) return EventResult.pass();
+            if (player.level().isClientSide) return EventResult.pass();
 
-            if(player instanceof ServerPlayer serverPlayer) NetworkManager.sendToPlayer(serverPlayer, new SyncSystemPacket(SYSTEMS));
-
-
-            PlanetCreator creator = null;
-
-            for (PlanetCreator planetCreator : SYSTEMS.planets) {
-                if (matchesDimension(planetCreator, planet)) {
-                    creator = planetCreator;
-                    break;
-                }
+            if (player instanceof ServerPlayer serverPlayer) {
+                NetworkManager.sendToPlayer(serverPlayer, new SyncSystemPacket(SYSTEMS));
+                return createPlanet(planet, serverPlayer, context);
             }
 
-            if(creator == null) return EventResult.pass();
-            Utils.generateWorld(context, creator);
             return EventResult.pass();
         });
 
@@ -67,6 +55,21 @@ public class Events {
 
         return planetCreator.moons.stream()
                 .anyMatch(moon -> moon.planet.dimension().equals(planet.dimension()));
+    }
+
+    public static EventResult createPlanet(Planet planet, ServerPlayer player, NetworkManager.PacketContext context) {
+        PlanetCreator creator = null;
+
+        for (PlanetCreator planetCreator : SYSTEMS.planets) {
+            if (matchesDimension(planetCreator, planet)) {
+                creator = planetCreator;
+                break;
+            }
+        }
+
+        if(creator == null) return EventResult.pass();
+        Utils.generateWorld(context, creator);
+        return EventResult.pass();
     }
 
 }
