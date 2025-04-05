@@ -31,13 +31,13 @@ public class NMConfig implements ConfigData {
     @ConfigEntry.Category("systems")
     public int maxSystems = 10;
 
-    @ConfigEntry.Category("system")
+    @ConfigEntry.Category("systems")
     public int minPlanets = 2;
 
-    @ConfigEntry.Category("system")
+    @ConfigEntry.Category("systems")
     public int maxPlanets = 8;
 
-    @ConfigEntry.Category("system")
+    @ConfigEntry.Category("systems")
     public int planetDistanceFromEarth = 900000;
 
     @ConfigEntry.Category("planets")
