@@ -151,7 +151,7 @@ public class PlanetCreator {
     }
 
     public Planet setPlanetInfo() {
-        boolean oxygen = Math.random() > (double) NoManCraft.getConfig().oxygenChance / 100;
+        boolean oxygen = Math.random() <= (double) NoManCraft.getConfig().oxygenChance / 100;
         float gravity = (float) Mth.clamp((Math.random() + Math.random()) * 10, 0.1, 12);
 
         return new Planet(this.system.system, "planet.nmc." + Utils.generateResourcelocation(this.name).getPath(), this.name, Utils.generateResourcelocation(this.name), oxygen, temperature.temperature(), NoManCraft.getConfig().planetDistanceFromEarth, gravity, this.stormParameters,
@@ -175,7 +175,7 @@ public class PlanetCreator {
 
     public Optional<Planet.StormParameters>  stormParameters() {
         Random random = new Random();
-        if(Math.random() <= (double) NoManCraft.getConfig().stormyPlanetChance / 100) return Optional.empty();
+        if(Math.random() > (double) NoManCraft.getConfig().stormyPlanetChance / 100) return Optional.empty();
 
         return Optional.of( new Planet.StormParameters(new Random().nextInt(NoManCraft.getConfig().minLightningFrequency, 300000), new Vec3(random.nextInt(255), random.nextInt(255), random.nextInt(255))));
     }

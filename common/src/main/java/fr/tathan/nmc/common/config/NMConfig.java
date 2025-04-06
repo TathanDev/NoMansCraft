@@ -61,6 +61,12 @@ public class NMConfig implements ConfigData {
     public int stormyPlanetChance = 20;
 
     @ConfigEntry.Category("planets")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
+    @ConfigEntry.Gui.Tooltip(count = 2)
+    public int floatingIslandChance = 20;
+
+
+    @ConfigEntry.Category("planets")
     @ConfigEntry.BoundedDiscrete(min = 1000, max = 30000)
     public int minLightningFrequency = 12000;
 

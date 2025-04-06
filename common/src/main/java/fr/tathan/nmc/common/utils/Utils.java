@@ -237,7 +237,12 @@ public class Utils {
 
 
     public static NoiseGeneratorSettings generatorSettings(RegistryAccess registryAccess, PlanetCreator planetInfo) {
-        return new NoiseGeneratorSettings(createNoiseSettings(), getDefaultBlock(planetInfo, registryAccess), getDefaultLiquid(planetInfo), NoiseRouterData.overworld(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE), Math.random() > (double) NoManCraft.getConfig().largeWorldChance / 100, Math.random() > (double) NoManCraft.getConfig().amplifiedWorldChance / 100), SurfaceRuleData.overworld(), (new OverworldBiomeBuilder()).spawnTarget(), getSeaLevel(), false, true, true, false);
+
+        if(Math.random() <= (double) NoManCraft.getConfig().floatingIslandChance / 100) {
+            return new NoiseGeneratorSettings(NoiseSettings.FLOATING_ISLANDS_NOISE_SETTINGS, getDefaultBlock(planetInfo, registryAccess), getDefaultLiquid(planetInfo), NoiseRouterData.floatingIslands(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE)), SurfaceRuleData.overworldLike(false, false, false), List.of(), -64, false, false, false, true);
+        }
+
+        return new NoiseGeneratorSettings(createNoiseSettings(), getDefaultBlock(planetInfo, registryAccess), getDefaultLiquid(planetInfo), NoiseRouterData.overworld(registryAccess.lookupOrThrow(Registries.DENSITY_FUNCTION), registryAccess.lookupOrThrow(Registries.NOISE), Math.random() <= (double) NoManCraft.getConfig().largeWorldChance / 100, Math.random() <= (double) NoManCraft.getConfig().amplifiedWorldChance / 100), SurfaceRuleData.overworld(), (new OverworldBiomeBuilder()).spawnTarget(), getSeaLevel(), false, true, true, false);
     }
 
     public static BlockState getDefaultBlock(PlanetCreator creator, RegistryAccess access) {

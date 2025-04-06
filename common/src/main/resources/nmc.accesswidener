@@ -2,3 +2,5 @@ accessWidener v2 named
 
 accessible method net/minecraft/world/level/levelgen/NoiseRouterData overworld (Lnet/minecraft/core/HolderGetter;Lnet/minecraft/core/HolderGetter;ZZ)Lnet/minecraft/world/level/levelgen/NoiseRouter;
 accessible field net/minecraft/server/MinecraftServer storageSource Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;
+accessible field net/minecraft/world/level/levelgen/NoiseSettings FLOATING_ISLANDS_NOISE_SETTINGS Lnet/minecraft/world/level/levelgen/NoiseSettings;
+accessible method net/minecraft/world/level/levelgen/NoiseRouterData floatingIslands (Lnet/minecraft/core/HolderGetter;Lnet/minecraft/core/HolderGetter;)Lnet/minecraft/world/level/levelgen/NoiseRouter;
