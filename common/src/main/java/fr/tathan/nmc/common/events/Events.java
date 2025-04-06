@@ -1,5 +1,6 @@
 package fr.tathan.nmc.common.events;
 
+import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.events.custom.PlanetSelectionServerEvents;
 import dev.architectury.event.EventResult;
@@ -25,6 +26,8 @@ public class Events {
 
             if (player instanceof ServerPlayer serverPlayer) {
                 NetworkManager.sendToPlayer(serverPlayer, new SyncSystemPacket(SYSTEMS));
+
+                Stellaris.LOG.error("Temperature : {}", planet.temperature());
                 return createPlanet(planet, serverPlayer, context);
             }
 

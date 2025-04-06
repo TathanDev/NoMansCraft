@@ -94,7 +94,6 @@ public class Utils {
 
     public static void generateWorld(NetworkManager.PacketContext context, PlanetCreator planetInfo) {
         Planet planet = planetInfo.planet;
-        Stellaris.LOG.error("Planet when Generating Temp : {}", planetInfo.temperature);
 
         context.registryAccess().registry(Registries.NOISE_SETTINGS).ifPresent((registry) -> {
 
@@ -104,14 +103,8 @@ public class Utils {
 
             Registry<DimensionType> dimensionTypes = context.registryAccess().registry(Registries.DIMENSION_TYPE).get();
 
-            Holder<DimensionType> holder;
+            Holder<DimensionType> holder = dimensionTypes.getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD);
 
-
-            if(planetInfo.temperature == PlanetTemperature.VERY_HOT) {
-                holder = dimensionTypes.getHolderOrThrow(BuiltinDimensionTypes.NETHER);
-            } else {
-                holder = dimensionTypes.getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD);
-            }
 
             PlanetsCreationLifecycle.PRE_PLANET_LEVEL_CREATION.invoker().prePlanetLevelCreation(planetInfo, generator, holder, context);
 

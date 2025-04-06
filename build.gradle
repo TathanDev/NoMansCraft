@@ -123,7 +123,7 @@ subprojects {
         publishMods {
             file = file(tasks.remapJar.archivePath)
             changelog = file("../changelog.md").getText('UTF-8')
-            type = ALPHA
+            type = BETA
             modLoaders.add(modLoader)
             displayName = "[${modLoader.capitalize()} ${minecraft_version}] No Man's Craft ${mod_version}"
 
