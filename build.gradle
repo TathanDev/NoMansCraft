@@ -102,7 +102,9 @@ subprojects {
             modApi("com.github.iPortalTeam:DimLib:v1.1.0-mc1.21.1") {
                 exclude(group: "net.fabricmc.fabric-api")
             }
-            //modRuntimeOnly "maven.modrinth:flashback:OJJaw9FV"
+            modRuntimeOnly "maven.modrinth:flashback:OJJaw9FV"
+            modRuntimeOnly "maven.modrinth:nvidium:3L83QwKZ"
+            modRuntimeOnly "maven.modrinth:sodium:RncWhTxD"
 
         }
 
