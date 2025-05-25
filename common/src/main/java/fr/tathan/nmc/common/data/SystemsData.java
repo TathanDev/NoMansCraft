@@ -7,6 +7,7 @@ import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.client.screens.PlanetSelectionScreen;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.data.planets.StellarisData;
+import dev.architectury.platform.Platform;
 import fr.tathan.nmc.NoManCraft;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import fr.tathan.nmc.common.creators.SystemCreator;
@@ -15,6 +16,7 @@ import fr.tathan.nmc.common.events.Events;
 import fr.tathan.nmc.common.events.custom.PlanetsCreationLifecycle;
 import fr.tathan.nmc.common.events.custom.SystemsCreationLifecycle;
 import fr.tathan.nmc.common.utils.Utils;
+import net.fabricmc.api.EnvType;
 import net.minecraft.util.GsonHelper;
 
 import java.io.BufferedReader;
@@ -81,10 +83,12 @@ public class SystemsData {
     public static List<Planet> getPlanetsFromContainer(SystemsContainer container) {
         List<Planet> planets = new ArrayList<>();
         for(PlanetCreator planet : container.planets) {
-            PlanetSelectionScreen.PLANETS.add(planet.planetInfo);
+
+
+            if (Platform.getEnv() == EnvType.CLIENT) PlanetSelectionScreen.PLANETS.add(planet.planetInfo);
             planets.add(planet.planet);
             planet.moons.forEach((moon) -> {
-                PlanetSelectionScreen.MOONS.add(moon.moonInfo);
+                if (Platform.getEnv() == EnvType.CLIENT) PlanetSelectionScreen.MOONS.add(moon.moonInfo);
                 planets.add(planet.planet);
             });
         }

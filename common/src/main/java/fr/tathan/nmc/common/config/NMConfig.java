@@ -77,6 +77,12 @@ public class NMConfig implements ConfigData {
     @ConfigEntry.Category("planets")
     public int maxBiomes = 12;
 
+    @ConfigEntry.Category("planets")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
+    @ConfigEntry.Gui.Tooltip(count = 2)
+    public int particleChance = 20;
+
+
     @ConfigEntry.Gui.Excluded
     @ConfigEntry.Category("planets")
     public List<String> veryColdBiomes =  List.of(
@@ -168,6 +174,16 @@ public class NMConfig implements ConfigData {
             {0xff80d9, 4},
             {0xe5ae60, 4},
             {0xf36363, 4}
+    };
+
+    @ConfigEntry.Gui.Excluded
+    @ConfigEntry.Category("planets")
+    @Comment("This is a list of ambient particles that can spawn on different planets. Order :  Hot/Very Hot/, Temperate, Cold/Very Cold.")
+    public String[][] ambientParticles = new String[][]{
+            {"minecraft:ash", "minecraft:crimson_spore", "minecraft:warped_spore", "minecraft:white_ash"},
+            {"nmc:none", "minecraft:underwater"},
+            {"minecraft:warped_spore", "minecraft:dripping_obsidian_tear", "minecraft:underwater", "minecraft:dust_plume", "minecraft:snowflake"}
+
     };
 
     @ConfigEntry.Gui.Excluded

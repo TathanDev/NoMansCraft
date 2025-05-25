@@ -14,8 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BiomeColors.class)
 public class CustomGrassColor {
 
-
-
     @Inject(method = "getAverageGrassColor", at = @At("HEAD"), cancellable = true)
     private static void get(BlockAndTintGetter level, BlockPos blockPos, CallbackInfoReturnable<Integer> cir) {
         Minecraft minecraft = Minecraft.getInstance();

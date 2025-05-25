@@ -3,6 +3,7 @@ package fr.tathan.nmc.common.creators;
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.client.screens.info.PlanetInfo;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.data.planets.PlanetTextures;
@@ -11,6 +12,8 @@ import fr.tathan.nmc.common.config.NMConfig;
 import fr.tathan.nmc.common.utils.*;
 import fr.tathan.sky_aesthetics.client.skies.PlanetSky;
 import fr.tathan.sky_aesthetics.client.skies.record.SkyProperties;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -18,10 +21,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.WeightedListInt;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class PlanetCreator {
@@ -38,13 +38,14 @@ public class PlanetCreator {
                     SkyProperties.CODEC.fieldOf("sky").forGetter(s -> s.sky),
                     Planet.StormParameters.CODEC.optionalFieldOf("stormParameters").forGetter(s -> s.stormParameters),
                     Codec.INT.fieldOf("grassColor").forGetter(s -> s.grassColor),
-                    Codec.INT.fieldOf("temperature").forGetter(s -> s.temperature.temperature())
+                    Codec.INT.fieldOf("temperature").forGetter(s -> s.temperature.temperature()),
+                    ResourceLocation.CODEC.optionalFieldOf("particle").forGetter(s -> s.particleLocation)
 
-            ).apply(instance, (canHaveMoon, systemName, distanceFromStar, name, planet, planetInfo, moons, sky, storm, grassColor, temperature) -> {
+            ).apply(instance, (canHaveMoon, systemName, distanceFromStar, name, planet, planetInfo, moons, sky, storm, grassColor, temperature, location) -> {
                 // Need to find the SystemCreator based on the systemName during deserialization
                 // This requires access to the list of systems (e.g., Events.SYSTEMS)
                 // For now, we'll pass null and fix it later (see deserialization notes below)
-                return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, storm, grassColor, temperature);
+                return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, storm, grassColor, temperature, location);
             }))
     );
 
@@ -64,8 +65,9 @@ public class PlanetCreator {
     private final String systemName;
     public final Optional<Planet.StormParameters> stormParameters;
     public final int grassColor;
+    public final Optional<ResourceLocation> particleLocation;
 
-    public PlanetCreator(boolean canHaveMoon, SystemCreator system, int distanceFromStar, String name, Planet planet, PlanetInfo planetInfo, List<MoonCreator> moons, SkyProperties sky, String systemName, Optional<Planet.StormParameters> stormParameters, int grassColor, int temperature) {
+    public PlanetCreator(boolean canHaveMoon, SystemCreator system, int distanceFromStar, String name, Planet planet, PlanetInfo planetInfo, List<MoonCreator> moons, SkyProperties sky, String systemName, Optional<Planet.StormParameters> stormParameters, int grassColor, int temperature, Optional<ResourceLocation> particleLocation) {
         this.canHaveMoon = canHaveMoon;
         this.system = system;
         this.distanceFromStar = distanceFromStar;
@@ -78,6 +80,7 @@ public class PlanetCreator {
         this.stormParameters = stormParameters;
         this.grassColor = grassColor;
         this.temperature = PlanetTemperature.fromInt(temperature);
+        this.particleLocation = particleLocation;
     }
 
     public static void toNetwork(PlanetCreator planet, final RegistryFriendlyByteBuf buffer) {
@@ -96,6 +99,7 @@ public class PlanetCreator {
         buffer.writeOptional(planet.stormParameters, (friendlyByteBuf, storm) -> storm.toNetwork(buffer));
         buffer.writeInt(planet.grassColor);
         buffer.writeInt(planet.temperature.temperature());
+        buffer.writeOptional(planet.particleLocation, FriendlyByteBuf::writeResourceLocation);
     }
 
     public static PlanetCreator fromNetwork(final RegistryFriendlyByteBuf buffer) {
@@ -113,8 +117,9 @@ public class PlanetCreator {
         var stormParameters = buffer.readOptional(Planet.StormParameters::readBuffer);
         var grassColor = buffer.readInt();
         var temperature = buffer.readInt();
+        var resourceLocation = buffer.readOptional((b) -> b.readResourceLocation());
 
-        return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, stormParameters, grassColor, temperature);
+        return new PlanetCreator(canHaveMoon, null, distanceFromStar, name, planet, planetInfo, moons, sky, systemName, stormParameters, grassColor, temperature, resourceLocation);
     }
 
     public PlanetCreator(SystemCreator system) {
@@ -140,6 +145,7 @@ public class PlanetCreator {
         this.sky = SkyUtils.createSky(this);
         this.systemName = system.name; // Store the system name
         this.grassColor = NMConfig.getPossibleBiomeColors().sample(RandomSource.create());
+        this.particleLocation = ambientParticle();
     }
 
     public ArrayList<MoonCreator> createMoons() {
@@ -179,6 +185,29 @@ public class PlanetCreator {
 
         return Optional.of( new Planet.StormParameters(new Random().nextInt(NoManCraft.getConfig().minLightningFrequency, 300000), new Vec3(random.nextInt(255), random.nextInt(255), random.nextInt(255))));
     }
+
+    public Optional<ResourceLocation> ambientParticle() {
+        Random random = new Random();
+        if(Math.random() > (double) NoManCraft.getConfig().particleChance / 100) return Optional.empty();
+
+        String[] possibleParticles;
+
+        switch (this.temperature) {
+            case HOT, VERY_HOT -> possibleParticles = NoManCraft.getConfig().ambientParticles[0];
+            case COLD, VERY_COLD -> possibleParticles = NoManCraft.getConfig().ambientParticles[2];
+            default -> possibleParticles = NoManCraft.getConfig().ambientParticles[1];
+        }
+
+        if (possibleParticles.length > 0) {
+            String particle = possibleParticles[random.nextInt(possibleParticles.length)];
+            if (particle.equals("nmc:none")) {
+                return Optional.of(ResourceLocation.parse(particle));
+            }
+        }
+
+        return Optional.empty();
+    }
+
 
     public void setSystem(SystemCreator system) {
         this.system = system;

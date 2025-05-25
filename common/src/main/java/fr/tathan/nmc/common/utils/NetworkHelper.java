@@ -7,10 +7,13 @@ import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.data.planets.PlanetTextures;
 import fr.tathan.sky_aesthetics.client.skies.record.*;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.biome.AmbientParticleSettings;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2f;
@@ -23,6 +26,7 @@ import java.util.List;
 public class NetworkHelper {
 
     public static class ToNetwork {
+
         public static void celestialBody(RegistryFriendlyByteBuf byteBuf, CelestialBody celestialBody) {
             byteBuf.writeResourceLocation(celestialBody.texture);
             byteBuf.writeUtf(celestialBody.name);
@@ -204,6 +208,12 @@ public class NetworkHelper {
             buffer.writeOptional(condition.biomes(), (b, c) -> buffer.writeResourceLocation(c.location()));
             buffer.writeOptional(condition.biome(), (b, c) -> buffer.writeResourceKey(c));
         }
+
+
+        public static void particle(RegistryFriendlyByteBuf byteBuf, AmbientParticleSettings settings) {
+
+        }
+
     }
 
     public static class FromNetwork {
