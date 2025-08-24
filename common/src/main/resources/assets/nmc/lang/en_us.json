@@ -30,7 +30,7 @@
   "text.autoconfig.nmc.option.floatingIslandChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
   "text.autoconfig.nmc.option.floatingIslandChance.@Tooltip[1]": "If it's lower or equals to this value, the planet will be floating island.",
 
-  "text.autoconfig.nmc.option.particleChance": "Floating Island Chance",
+  "text.autoconfig.nmc.option.particleChance": "Ambient Particle Chance",
   "text.autoconfig.nmc.option.particleChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
   "text.autoconfig.nmc.option.particleChance.@Tooltip[1]": "If it's lower or equals to this value, the planet will have custom ambient particle.",
 

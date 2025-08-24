@@ -33,7 +33,7 @@ public class SystemsData {
     public static void loadOrGenerateDefaults(Path worldPath) {
         Path systemsFile = worldPath.resolve("systems.json");
 
-        Stellaris.LOG.error("Loading systems from file {}", systemsFile.toUri());
+        Stellaris.LOG.error("Loading systems from file {}", systemsFile.toAbsolutePath());
         try {
             BufferedReader reader = Files.newBufferedReader(systemsFile);
             JsonElement jsonElement = GsonHelper.parse(reader);

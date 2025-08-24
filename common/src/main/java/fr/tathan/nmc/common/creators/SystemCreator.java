@@ -25,7 +25,7 @@ public class SystemCreator {
             RecordCodecBuilder.create((instance) -> instance.group(
                     Codec.STRING.fieldOf("name").forGetter(s -> s.name),
                     Codec.STRING.fieldOf("system").forGetter(s -> s.system),
-                    Codecs.CELESTIAL_BODY.fieldOf("celestialBody").forGetter(s -> s.celestialBody),
+                    CelestialBody.CODEC.fieldOf("celestialBody").forGetter(s -> s.celestialBody),
                     Codec.STRING.listOf().fieldOf("planets").forGetter(s -> {
                         List<String> planetNames = new ArrayList<>();
                         for (PlanetCreator planet : s.planets) {
@@ -89,7 +89,8 @@ public class SystemCreator {
                 Utils.getRandomColor(),
                 Utils.generateResourcelocation(this.name),
                 this.name,
-                this.system
+                this.system,
+                "stellaris:milky_way"
         );
     }
 

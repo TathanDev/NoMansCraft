@@ -3,22 +3,19 @@ package fr.tathan.nmc.common.creators;
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.client.screens.info.PlanetInfo;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.data.planets.PlanetTextures;
 import fr.tathan.nmc.NoManCraft;
 import fr.tathan.nmc.common.config.NMConfig;
 import fr.tathan.nmc.common.utils.*;
-import fr.tathan.sky_aesthetics.client.skies.PlanetSky;
+import fr.tathan.sky_aesthetics.client.skies.DimensionSky;
 import fr.tathan.sky_aesthetics.client.skies.record.SkyProperties;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.valueproviders.WeightedListInt;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
@@ -160,7 +157,7 @@ public class PlanetCreator {
         boolean oxygen = Math.random() <= (double) NoManCraft.getConfig().oxygenChance / 100;
         float gravity = (float) Mth.clamp((Math.random() + Math.random()) * 10, 0.1, 12);
 
-        return new Planet(this.system.system, "planet.nmc." + Utils.generateResourcelocation(this.name).getPath(), this.name, Utils.generateResourcelocation(this.name), oxygen, temperature.temperature(), NoManCraft.getConfig().planetDistanceFromEarth, gravity, this.stormParameters,
+        return new Planet(this.system.system, "planet.nmc." + Utils.generateResourcelocation(this.name).getPath(), this.name, Utils.generateResourcelocation(this.name), Optional.empty(), Optional.empty(), oxygen, temperature.temperature(), NoManCraft.getConfig().planetDistanceFromEarth, gravity, this.stormParameters,
                  new PlanetTextures(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/planet.png"), ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/planet.png")));
     }
 
@@ -175,11 +172,12 @@ public class PlanetCreator {
                 this.system.celestialBody,
                 Utils.generateResourcelocation(this.name),
                 this.name,
-                Utils.generateResourcelocation(this.name).getPath()
+                Utils.generateResourcelocation(this.name).getPath(),
+                false, true
         );
     }
 
-    public Optional<Planet.StormParameters>  stormParameters() {
+    public Optional<Planet.StormParameters> stormParameters() {
         Random random = new Random();
         if(Math.random() > (double) NoManCraft.getConfig().stormyPlanetChance / 100) return Optional.empty();
 
@@ -200,7 +198,7 @@ public class PlanetCreator {
 
         if (possibleParticles.length > 0) {
             String particle = possibleParticles[random.nextInt(possibleParticles.length)];
-            if (particle.equals("nmc:none")) {
+            if (!particle.equals("nmc:none")) {
                 return Optional.of(ResourceLocation.parse(particle));
             }
         }
@@ -238,8 +236,8 @@ public class PlanetCreator {
     }
 
 
-    public PlanetSky getSky() {
-        return new PlanetSky(sky);
+    public DimensionSky getSky() {
+        return new DimensionSky(sky);
     }
 
 

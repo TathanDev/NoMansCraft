@@ -1,5 +1,6 @@
 package fr.tathan.nmc.common.networks.packets;
 
+import com.st0x0ef.stellaris.Stellaris;
 import com.st0x0ef.stellaris.client.screens.PlanetSelectionScreen;
 import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.data.planets.StellarisData;
@@ -46,6 +47,7 @@ public class SyncSystemPacket implements CustomPacketPayload {
         Events.SYSTEMS = packet.container;
         ArrayList<Planet> planets = new ArrayList<>();
         for(SystemCreator system : packet.container.systems) {
+
             PlanetSelectionScreen.STARS.add(system.celestialBody);
         }
         for(PlanetCreator planet : packet.container.planets) {

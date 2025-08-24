@@ -22,6 +22,7 @@ import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class NetworkHelper {
 
@@ -39,19 +40,24 @@ public class NetworkHelper {
             byteBuf.writeUtf(celestialBody.translatable);
             byteBuf.writeUtf(celestialBody.id);
             byteBuf.writeBoolean(celestialBody.clickable);
+            byteBuf.writeUtf(celestialBody.galaxy);
+
         }
 
         public static void planetInfo(RegistryFriendlyByteBuf byteBuf, PlanetInfo info) {
             byteBuf.writeResourceLocation(info.texture);
             byteBuf.writeUtf(info.name);
             byteBuf.writeDouble(info.orbitRadius);
-            byteBuf.writeLong(info.orbitDuration);
+            byteBuf.writeLong(info.getOrbitDuration());
             byteBuf.writeFloat(info.width);
             byteBuf.writeFloat(info.height);
             NetworkHelper.ToNetwork.celestialBody(byteBuf, info.orbitCenter);
             byteBuf.writeResourceLocation(info.dimension);
             byteBuf.writeUtf(info.translatable);
             byteBuf.writeUtf(info.id);
+            byteBuf.writeBoolean(info.spaceStation);
+            byteBuf.writeBoolean(info.canLaunchOn);
+
         }
 
         public static void moonInfo(RegistryFriendlyByteBuf byteBuf, MoonInfo info) {
@@ -229,7 +235,8 @@ public class NetworkHelper {
                 byteBuf.readResourceLocation(),
                 byteBuf.readUtf(),
                 byteBuf.readUtf(),
-                byteBuf.readBoolean()
+                byteBuf.readBoolean(),
+                byteBuf.readUtf()
             );
         }
 
@@ -244,7 +251,9 @@ public class NetworkHelper {
                     NetworkHelper.FromNetwork.celestialBody(byteBuf),
                     byteBuf.readResourceLocation(),
                     byteBuf.readUtf(),
-                    byteBuf.readUtf()
+                    byteBuf.readUtf(),
+                    byteBuf.readBoolean(),
+                    byteBuf.readBoolean()
             );
         }
 
@@ -264,7 +273,7 @@ public class NetworkHelper {
         }
 
         public static Planet planet(RegistryFriendlyByteBuf byteBuf) {
-           return new Planet(byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readResourceLocation(), byteBuf.readBoolean(), byteBuf.readFloat(), byteBuf.readInt(), byteBuf.readFloat(), byteBuf.readOptional((b) -> Planet.StormParameters.readBuffer(byteBuf)),  PlanetTextures.fromNetwork(byteBuf));
+           return new Planet(byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readResourceLocation(), Optional.empty(), Optional.empty(), byteBuf.readBoolean(), byteBuf.readFloat(), byteBuf.readInt(), byteBuf.readFloat(), byteBuf.readOptional((b) -> Planet.StormParameters.readBuffer(byteBuf)),  PlanetTextures.fromNetwork(byteBuf));
         }
 
         public static CloudSettings cloudSettings(RegistryFriendlyByteBuf byteBuf) {

@@ -3,4 +3,5 @@
 Small Fix
 
 ## Features 
+- Add floating island generation
 - Custom ambient particles

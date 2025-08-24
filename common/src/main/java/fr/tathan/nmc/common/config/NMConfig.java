@@ -82,6 +82,9 @@ public class NMConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip(count = 2)
     public int particleChance = 20;
 
+    @ConfigEntry.Category("planets")
+    public boolean test = true;
+
 
     @ConfigEntry.Gui.Excluded
     @ConfigEntry.Category("planets")

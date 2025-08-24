@@ -50,6 +50,7 @@ subprojects {
         maven { url = 'https://maven.nucleoid.xyz/' }
 
         maven { url "https://maven.exodusstudio.org/releases" }
+        maven { url "https://maven.exodusstudio.org/snapshots" }
 
         maven {
             url = "https://repo.terradevelopment.net/repository/maven-releases"

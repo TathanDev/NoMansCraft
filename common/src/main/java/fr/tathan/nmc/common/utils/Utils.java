@@ -15,7 +15,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.SurfaceRuleData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -92,26 +94,32 @@ public class Utils {
         return ResourceLocation.fromNamespaceAndPath("nmc", name);
     }
 
-    public static void generateWorld(NetworkManager.PacketContext context, PlanetCreator planetInfo) {
+    public static void generateWorld(MinecraftServer server, Player player, PlanetCreator planetInfo) {
         Planet planet = planetInfo.planet;
 
-        context.registryAccess().registry(Registries.NOISE_SETTINGS).ifPresent((registry) -> {
+        server.registryAccess().registry(Registries.NOISE_SETTINGS).ifPresent((registry) -> {
 
-            NoiseGeneratorSettings generatorSettings = generatorSettings(context.registryAccess(), planetInfo);
-            Climate.ParameterList<Holder<Biome>> parameters = createParameters(context.registryAccess(), planetInfo);
+            NoiseGeneratorSettings generatorSettings = generatorSettings(server.registryAccess(), planetInfo);
+            Climate.ParameterList<Holder<Biome>> parameters = createParameters(server.registryAccess(), planetInfo);
             NoiseBasedChunkGenerator generator = new NoiseBasedChunkGenerator(MultiNoiseBiomeSource.createFromList(parameters), registry.wrapAsHolder(generatorSettings));
 
-            Registry<DimensionType> dimensionTypes = context.registryAccess().registry(Registries.DIMENSION_TYPE).get();
+            Registry<DimensionType> dimensionTypes = server.registryAccess().registry(Registries.DIMENSION_TYPE).get();
 
             Holder<DimensionType> holder = dimensionTypes.getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD);
 
 
-            PlanetsCreationLifecycle.PRE_PLANET_LEVEL_CREATION.invoker().prePlanetLevelCreation(planetInfo, generator, holder, context);
+            PlanetsCreationLifecycle.PRE_PLANET_LEVEL_CREATION.invoker().prePlanetLevelCreation(planetInfo, generator, holder, server, player);
 
-            ServerLevel level = DimensionUtil.createPlanet(context.getPlayer().getServer(), planet.dimension(), generator, holder);
-            
+            ServerLevel level = DimensionUtil.createPlanet(server, planet.dimension(), generator, holder);
+
         });
+
     }
+
+
+        public static void generateWorld(NetworkManager.PacketContext context, PlanetCreator planetInfo) {
+            generateWorld(context.getPlayer().getServer(), context.getPlayer(), planetInfo);
+        }
 
     public static Climate.ParameterList<Holder<Biome>> createParameters(RegistryAccess registryAccess, PlanetCreator planetInfo) {
         Climate.Parameter fullRange = Climate.Parameter.span(-1.0F, 1.0F);
