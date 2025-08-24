@@ -3,6 +3,7 @@ package fr.tathan.nmc.mixin;
 import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.st0x0ef.stellaris.Stellaris;
 import fr.tathan.nmc.NoManCraft;
 import net.minecraft.data.worldgen.SurfaceRuleData;
 import org.spongepowered.asm.mixin.Mixin;

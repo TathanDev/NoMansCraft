@@ -6,6 +6,8 @@ import dev.architectury.networking.NetworkManager;
 import fr.tathan.nmc.common.creators.PlanetCreator;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
@@ -24,9 +26,10 @@ public interface PlanetsCreationLifecycle {
          * @param planet    The planet registered.
          * @param holder    The dimension type of the planet.
          * @param generator The noise generator of the level.
-         * @param context   The context of the packet.
+         * @param server   The minecraft server.
+         * @param player   The player who created the planet.
          */
-        void prePlanetLevelCreation(PlanetCreator planet, NoiseBasedChunkGenerator generator, Holder<DimensionType> holder, NetworkManager.PacketContext context);
+        void prePlanetLevelCreation(PlanetCreator planet, NoiseBasedChunkGenerator generator, Holder<DimensionType> holder, MinecraftServer server, Player player);
     }
 
     interface PostBiomeSelection {

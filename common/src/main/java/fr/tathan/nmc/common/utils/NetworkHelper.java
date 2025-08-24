@@ -7,10 +7,13 @@ import com.st0x0ef.stellaris.common.data.planets.Planet;
 import com.st0x0ef.stellaris.common.data.planets.PlanetTextures;
 import fr.tathan.sky_aesthetics.client.skies.record.*;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.biome.AmbientParticleSettings;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2f;
@@ -19,10 +22,12 @@ import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class NetworkHelper {
 
     public static class ToNetwork {
+
         public static void celestialBody(RegistryFriendlyByteBuf byteBuf, CelestialBody celestialBody) {
             byteBuf.writeResourceLocation(celestialBody.texture);
             byteBuf.writeUtf(celestialBody.name);
@@ -35,19 +40,24 @@ public class NetworkHelper {
             byteBuf.writeUtf(celestialBody.translatable);
             byteBuf.writeUtf(celestialBody.id);
             byteBuf.writeBoolean(celestialBody.clickable);
+            byteBuf.writeUtf(celestialBody.galaxy);
+
         }
 
         public static void planetInfo(RegistryFriendlyByteBuf byteBuf, PlanetInfo info) {
             byteBuf.writeResourceLocation(info.texture);
             byteBuf.writeUtf(info.name);
             byteBuf.writeDouble(info.orbitRadius);
-            byteBuf.writeLong(info.orbitDuration);
+            byteBuf.writeLong(info.getOrbitDuration());
             byteBuf.writeFloat(info.width);
             byteBuf.writeFloat(info.height);
             NetworkHelper.ToNetwork.celestialBody(byteBuf, info.orbitCenter);
             byteBuf.writeResourceLocation(info.dimension);
             byteBuf.writeUtf(info.translatable);
             byteBuf.writeUtf(info.id);
+            byteBuf.writeBoolean(info.spaceStation);
+            byteBuf.writeBoolean(info.canLaunchOn);
+
         }
 
         public static void moonInfo(RegistryFriendlyByteBuf byteBuf, MoonInfo info) {
@@ -204,6 +214,12 @@ public class NetworkHelper {
             buffer.writeOptional(condition.biomes(), (b, c) -> buffer.writeResourceLocation(c.location()));
             buffer.writeOptional(condition.biome(), (b, c) -> buffer.writeResourceKey(c));
         }
+
+
+        public static void particle(RegistryFriendlyByteBuf byteBuf, AmbientParticleSettings settings) {
+
+        }
+
     }
 
     public static class FromNetwork {
@@ -219,7 +235,8 @@ public class NetworkHelper {
                 byteBuf.readResourceLocation(),
                 byteBuf.readUtf(),
                 byteBuf.readUtf(),
-                byteBuf.readBoolean()
+                byteBuf.readBoolean(),
+                byteBuf.readUtf()
             );
         }
 
@@ -234,7 +251,9 @@ public class NetworkHelper {
                     NetworkHelper.FromNetwork.celestialBody(byteBuf),
                     byteBuf.readResourceLocation(),
                     byteBuf.readUtf(),
-                    byteBuf.readUtf()
+                    byteBuf.readUtf(),
+                    byteBuf.readBoolean(),
+                    byteBuf.readBoolean()
             );
         }
 
@@ -254,7 +273,7 @@ public class NetworkHelper {
         }
 
         public static Planet planet(RegistryFriendlyByteBuf byteBuf) {
-           return new Planet(byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readResourceLocation(), byteBuf.readBoolean(), byteBuf.readFloat(), byteBuf.readInt(), byteBuf.readFloat(), byteBuf.readOptional((b) -> Planet.StormParameters.readBuffer(byteBuf)),  PlanetTextures.fromNetwork(byteBuf));
+           return new Planet(byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readUtf(), byteBuf.readResourceLocation(), Optional.empty(), Optional.empty(), byteBuf.readBoolean(), byteBuf.readFloat(), byteBuf.readInt(), byteBuf.readFloat(), byteBuf.readOptional((b) -> Planet.StormParameters.readBuffer(byteBuf)),  PlanetTextures.fromNetwork(byteBuf));
         }
 
         public static CloudSettings cloudSettings(RegistryFriendlyByteBuf byteBuf) {

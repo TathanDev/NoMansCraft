@@ -12,19 +12,29 @@
 
   "text.autoconfig.nmc.option.oxygenChance": "Oxygen Chance",
   "text.autoconfig.nmc.option.oxygenChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
-  "text.autoconfig.nmc.option.oxygenChance.@Tooltip[1]": "If it's higher than this value, the planet will have oxygen.",
+  "text.autoconfig.nmc.option.oxygenChance.@Tooltip[1]": "If it's lower than this value, the planet will have oxygen.",
 
   "text.autoconfig.nmc.option.largeWorldChance": "Large World Chance",
   "text.autoconfig.nmc.option.largeWorldChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
-  "text.autoconfig.nmc.option.largeWorldChance.@Tooltip[1]": "If it's higher than this value, the planet will have large biomes.",
+  "text.autoconfig.nmc.option.largeWorldChance.@Tooltip[1]": "If it's lower than this value, the planet will have large biomes.",
 
   "text.autoconfig.nmc.option.amplifiedWorldChance": "Amplified World Chance",
   "text.autoconfig.nmc.option.amplifiedWorldChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
-  "text.autoconfig.nmc.option.amplifiedWorldChance.@Tooltip[1]": "If it's higher than this value, the planet will be amplified.",
+  "text.autoconfig.nmc.option.amplifiedWorldChance.@Tooltip[1]": "If it's lower than this value, the planet will be amplified.",
 
   "text.autoconfig.nmc.option.stormyPlanetChance": "Stormy Planet Chance",
   "text.autoconfig.nmc.option.stormyPlanetChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
-  "text.autoconfig.nmc.option.stormyPlanetChance.@Tooltip[1]": "If it's higher than this value, the planet will be a stormy planet.",
+  "text.autoconfig.nmc.option.stormyPlanetChance.@Tooltip[1]": "If it's lower than this value, the planet will be a stormy planet.",
+
+  "text.autoconfig.nmc.option.floatingIslandChance": "Floating Island Chance",
+  "text.autoconfig.nmc.option.floatingIslandChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
+  "text.autoconfig.nmc.option.floatingIslandChance.@Tooltip[1]": "If it's lower or equals to this value, the planet will be floating island.",
+
+  "text.autoconfig.nmc.option.particleChance": "Ambient Particle Chance",
+  "text.autoconfig.nmc.option.particleChance.@Tooltip[0]": "A random number between 0 and 100 will be generated.",
+  "text.autoconfig.nmc.option.particleChance.@Tooltip[1]": "If it's lower or equals to this value, the planet will have custom ambient particle.",
+
+
 
   "text.autoconfig.nmc.option.minLightningFrequency": "Minimum Lightning Frequency",
 
@@ -33,7 +43,6 @@
 
   "text.autoconfig.nmc.option.minBiomes.@Tooltip[0]": "A random number between Minimum and Maximum biomes will be generated.",
   "text.autoconfig.nmc.option.minBiomes.@Tooltip[1]": "This will be the number of biomes on the planet.",
-
 
   "biome.nmc.wasteland": "Wasteland",
   "biome.nmc.big_taiga": "Big Taiga",

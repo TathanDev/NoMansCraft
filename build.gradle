@@ -50,6 +50,7 @@ subprojects {
         maven { url = 'https://maven.nucleoid.xyz/' }
 
         maven { url "https://maven.exodusstudio.org/releases" }
+        maven { url "https://maven.exodusstudio.org/snapshots" }
 
         maven {
             url = "https://repo.terradevelopment.net/repository/maven-releases"
@@ -103,6 +104,8 @@ subprojects {
                 exclude(group: "net.fabricmc.fabric-api")
             }
             //modRuntimeOnly "maven.modrinth:flashback:OJJaw9FV"
+            modRuntimeOnly "maven.modrinth:nvidium:3L83QwKZ"
+            modRuntimeOnly "maven.modrinth:sodium:RncWhTxD"
 
         }
 

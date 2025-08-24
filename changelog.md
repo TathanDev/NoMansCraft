@@ -1,9 +1,10 @@
-# No Man's Craft 0.1.0
+# No Man's Craft 0.2.0
 
-This is the first beta ! I fixed a really annoying bug with the temperature showed in the planet gui was not the same as the real temperature. 
+**Update to Stellaris 1.4.7**
 
-## Fix
-- Fixed the temperature not being saved
+Small Fix
 
-## Added
-- Added new biomes to the config
+## Features 
+- Add floating island generation
+- Custom ambient particles
+

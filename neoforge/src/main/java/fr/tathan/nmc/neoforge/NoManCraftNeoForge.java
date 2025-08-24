@@ -10,11 +10,5 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 public final class NoManCraftNeoForge {
     public NoManCraftNeoForge() {
         NoManCraft.init();
-        NeoForge.EVENT_BUS.addListener(StellarisNeoForge::onAddReloadListenerEvent);
     }
-
-    public static void onAddReloadListenerEvent(AddReloadListenerEvent event) {
-        NoManCraft.onAddReloadListenerEvent((id, listener) -> event.addListener(listener));
-    }
-
 }

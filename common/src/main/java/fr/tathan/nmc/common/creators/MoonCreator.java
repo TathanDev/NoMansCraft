@@ -87,7 +87,7 @@ public class MoonCreator {
         boolean oxygen = Math.random() > 0.2;
         float gravity = (float) Mth.clamp((Math.random() + Math.random()) * 10, 0.1, 12);
 
-        return new Planet(this.systemName, "planet.nmc." + Utils.generateResourcelocation(this.name).getPath(), this.name, Utils.generateResourcelocation(this.name), oxygen, temperature.temperature(), 900000, gravity, Optional.empty(),
+        return new Planet(this.systemName, "planet.nmc." + Utils.generateResourcelocation(this.name).getPath(), this.name, Utils.generateResourcelocation(this.name), Optional.empty(), Optional.empty(), oxygen, temperature.temperature(), 900000, gravity, Optional.empty(),
                 new PlanetTextures(ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/planet.png"), ResourceLocation.fromNamespaceAndPath("nmc", "textures/planets/planet.png")));
     }
 

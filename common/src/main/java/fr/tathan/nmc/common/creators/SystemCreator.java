@@ -25,7 +25,7 @@ public class SystemCreator {
             RecordCodecBuilder.create((instance) -> instance.group(
                     Codec.STRING.fieldOf("name").forGetter(s -> s.name),
                     Codec.STRING.fieldOf("system").forGetter(s -> s.system),
-                    Codecs.CELESTIAL_BODY.fieldOf("celestialBody").forGetter(s -> s.celestialBody),
+                    CelestialBody.CODEC.fieldOf("celestialBody").forGetter(s -> s.celestialBody),
                     Codec.STRING.listOf().fieldOf("planets").forGetter(s -> {
                         List<String> planetNames = new ArrayList<>();
                         for (PlanetCreator planet : s.planets) {
@@ -81,15 +81,16 @@ public class SystemCreator {
         return new CelestialBody(ResourceLocation.parse("stellaris:textures/environment/star/sun.png"),
                 this.name,
                 //X of Solar System + width of Solar System + Number of Systems + random number between 0 and 1000
-                300 + 140  + (float) (Math.random() * (Math.random() * Math.random() * 50 * ( Math.random() * 1000))),
+                300 + 210  + (float) (Math.random() * (Math.random() * Math.random() * 50 * ( Math.random() * 1000))),
                 //Y of Solar System + width of Solar System + Number of Systems + random number between 0 and 1000
-                100 + 140 + (float) (Math.random() * (Math.random() * Math.random() * 50 * ( Math.random() * 1000))),
+                100 + 210 + (float) (Math.random() * (Math.random() * Math.random() * 50 * ( Math.random() * 1000))),
                 30,
                 30,
                 Utils.getRandomColor(),
                 Utils.generateResourcelocation(this.name),
                 this.name,
-                this.system
+                this.system,
+                "stellaris:milky_way"
         );
     }
 
